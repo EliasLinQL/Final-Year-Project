@@ -1,0 +1,11 @@
+UI 每个标号都是独立页面，通过bottom click跳转，相当于控制面板，还是直接拉tradingview更好
+	用户体验 美观、易用和一致的界面风格 优化感知和操作
+1.训练 or 使用已有模型<-清晰展示默认模型的种类
+1->2.训练 		choose cryptocurrencies and date 键入或者在窗口中列举让用户勾选
+		 	训练完成后展示 loss过程图等（从result中打开）
+1,2->3.主页面 包括
+		graph的展示（按下直接呼出result里的那个html文件）
+		预测的偏差图
+		单币种预测的曲线图
+		tradingview  pine script 用于回测——重点
+3->4. tradingview  pine script 调整，画线，在打开tradingview的同时展示回测曲线与重要数值，...
