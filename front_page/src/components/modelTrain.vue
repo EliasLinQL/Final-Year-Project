@@ -7,7 +7,7 @@
 <style scoped>
   .box{
     background-color: #757575;
-    width: 400px;
+    width: 520px;
     height: 400px;
     margin: 10px;
   }
