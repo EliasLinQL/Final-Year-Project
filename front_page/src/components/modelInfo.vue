@@ -29,7 +29,7 @@
     </div>
     <div class="box-row box-btn">
       <button class="btn" @click="goTrain">Go Train</button>
-      <button class="btn">Add</button>
+      <button class="btn" @click="showGraph">Add</button>
     </div>
   </div>
 </template>
@@ -38,11 +38,14 @@
 import Checkmenu from "@/components/checkmenu.vue";
 
 //定义子组件触发父组件事件
-const emit = defineEmits(['triggerTrain']);
+const emit = defineEmits(['triggerTrain','triggerGraph']);
 
 //通过按钮事件来通知父组件触发对应事件
 function goTrain() {
   emit("triggerTrain");
+}
+function showGraph(){
+  emit("triggerGraph");
 }
 
 </script>
