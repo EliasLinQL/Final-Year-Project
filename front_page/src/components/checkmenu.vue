@@ -44,7 +44,6 @@ function toggleMenu() {
   padding: 2px;
   border: 1px solid #ccc;
   border-radius: 16px;
-
 }
 
 .toggle-button {

@@ -1,12 +1,11 @@
 <template>
   <div class="container">
 
-    <model-info class="info" :class="{ toright: isTrainVisible }"/>
+    <model-info class="info" :class="{ toright: isTrainVisible }" @triggerTrain="goTrain"/>
 
     <transition name="train">
-      <model-train class="train" v-if ="isTrainVisible" />
+      <model-train class="train" v-if ="isTrainVisible" @triggerEndTrain="endTrain"/>
     </transition>
-    <button class="btn-gotrain" @click="goTrain">Train</button>
   </div>
 
 </template>
@@ -22,6 +21,9 @@ const isTrainVisible = ref(false);
 
 function goTrain() {
   isTrainVisible.value = true;
+}
+function endTrain() {
+  isTrainVisible.value = false;
 }
 </script>
 
@@ -50,11 +52,6 @@ function goTrain() {
   opacity: 1;
 }
 
-.btn-gotrain {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-}
 
 .toright{
   transform: translateX(-500px);
@@ -62,7 +59,7 @@ function goTrain() {
 
 
 /* 为 model-train 组件的过渡效果 */
-.train-enter-active {
+.train-enter-active,.train-leave-active {
   transition: all 1.2s ease;
 }
 
@@ -70,7 +67,10 @@ function goTrain() {
   transform: translateX(800px);
   opacity: 20%;
 }
-
+.train-leave-to {
+  transform: translateX(800px);
+  opacity: 0;
+}
 
 
 

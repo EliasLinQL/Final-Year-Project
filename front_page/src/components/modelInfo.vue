@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="box-row box-btn">
-      <button class="btn">Train</button>
+      <button class="btn" @click="goTrain">Go Train</button>
       <button class="btn">Add</button>
     </div>
   </div>
@@ -37,6 +37,13 @@
 <script setup>
 import Checkmenu from "@/components/checkmenu.vue";
 
+//定义子组件触发父组件事件
+const emit = defineEmits(['triggerTrain']);
+
+//通过按钮事件来通知父组件触发对应事件
+function goTrain() {
+  emit("triggerTrain");
+}
 
 </script>
 
@@ -50,6 +57,7 @@ import Checkmenu from "@/components/checkmenu.vue";
   margin: 10px;
   padding: 0;
   position: relative;
+  border-radius: 18px;
 }
 .box-row{
   display: flex;
@@ -102,5 +110,6 @@ p{
 .box-checkmenu{
   position: absolute;
   left: 180px;
+  z-index: 1;
 }
 </style>
