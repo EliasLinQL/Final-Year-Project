@@ -1,10 +1,17 @@
 <template>
-  <div class="box-column">
+  <div class="box-column" :class="{ box_switch: props.stateSwitchD}">
 
   </div>
 </template>
 
 <script setup>
+
+const props = defineProps({
+  stateSwitchD: {
+    type: Boolean,
+    required: true
+  }
+})
 
 </script>
 
@@ -19,13 +26,11 @@
   padding: 0;
   position: relative;
   border-radius: 18px;
+  transition: width 1s ease, height 1s ease;
 }
-.box-row{
-  display: flex;
-  flex-direction: row;
-  margin: 0;
-  margin-left: 10px;
-  margin-top: 5px;
+.box_switch{
+  width: 1260px;
+  height: 630px;
 }
 p{
   margin: 15px;

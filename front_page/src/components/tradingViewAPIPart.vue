@@ -1,10 +1,14 @@
 <template>
   <div class="box-column">
 
+
   </div>
 </template>
 
 <script setup>
+
+
+
 
 </script>
 
@@ -13,8 +17,8 @@
   display: flex;
   flex-direction: column;
   background-color: #757575;
-  width: 700px;
-  height: 460px;
+  width: 1300px;
+  height: 900px;
   margin: 10px;
   padding: 0;
   position: relative;

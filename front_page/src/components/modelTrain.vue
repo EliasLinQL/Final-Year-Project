@@ -26,7 +26,7 @@
     </div>
     <div class="box-row box-btn">
       <button class="btn" @click="endTrain">End Training</button>
-      <button class="btn">Start Train</button>
+      <button class="btn" @click="startTrain">Start Train</button>
     </div>
   </div>
 </template>
@@ -35,11 +35,14 @@
 import Checkmenu from "@/components/checkmenu.vue";
 
 //定义子组件触发父组件事件
-const emit = defineEmits(["triggerEndTrain"]);
+const emit = defineEmits(["triggerEndTrain","triggerStartTrain"]);
 
 //通过按钮事件来通知父组件触发对应事件
 function endTrain() {
   emit("triggerEndTrain");
+}
+function startTrain() {
+  emit("triggerStartTrain");
 }
 </script>
 
