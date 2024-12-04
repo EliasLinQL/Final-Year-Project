@@ -1,7 +1,7 @@
 <template>
   <div class="checkbox-menu">
     <button @click="toggleMenu" class="toggle-button">
-      {{ isMenuVisible ? 'Back' : 'Open' }}
+      {{ isMenuVisible ? 'Close' : 'Open' }}
       <span class="triangle" :class="{ rotate: isMenuVisible }"></span>
     </button>
 
@@ -68,11 +68,11 @@ function toggleMenu() {
   border-right: 5px solid transparent;
   border-top: 5px solid white;
   transition: transform 0.3s ease-in-out;
-  transform: rotate(-90deg);
+
 }
 
 .triangle.rotate {
-  transform: rotate(90deg);
+  transform: rotate(180deg);
 }
 
 .checkbox-container {
@@ -104,9 +104,8 @@ function toggleMenu() {
   opacity: 80%;
 }
 
-/* 用于展开时使 checkbox-container 最大高度为实际内容的高度 */
 .checkbox-fade-enter-to {
-  max-height: 200px; /* 可以根据实际情况设置 */
+  max-height: 200px;
   opacity: 1;
 }
 </style>

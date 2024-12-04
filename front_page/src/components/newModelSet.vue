@@ -15,7 +15,7 @@
     <div class="box-row">
       <p class="p2">Target<br>Currency</p>
       <div class="box-currencychoose">
-        <checkmenu/>
+        <currency-checkmenu/>
       </div>
     </div>
     <div class="box-row box-btn">
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import Checkmenu from "@/components/checkmenu.vue";
+import CurrencyCheckmenu from "@/components/currencyCheckmenu.vue";
 
 const emit = defineEmits(["triggerCreateNewModel","triggerCancelCreate"]);
 
@@ -64,7 +64,8 @@ function Cancel() {
 
 .p2 {
   font-size: 18px;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 p {
   margin: 15px;
@@ -77,16 +78,16 @@ p {
   background-color: #827E7E;
   margin-right: 20px;
   position: absolute;
-  transform: translate(150px, 24px);
+  transform: translate(150px, 12px);
 }
 .box-currencychoose{
   margin-right: 20px;
   position: absolute;
-  transform: translate(150px, 21px);
+  transform: translate(150px, 12px);
   z-index: 1;
 }
 .btn {
-  margin-top: 144px;
+  margin-top: 184px;
   margin-bottom: 5px;
   width: 158px;
   height: 38px;

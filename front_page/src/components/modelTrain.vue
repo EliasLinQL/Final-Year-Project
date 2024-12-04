@@ -5,7 +5,7 @@
     </div>
     <div class="box-row model-set">
       <p class="p2 model-set">Model Settings</p>
-      <checkmenu class="check-part"/>
+      <model-checkmenu class="check-part"/>
       <button class="add-btn" @click="createModel">
         +
       </button>
@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import Checkmenu from "@/components/checkmenu.vue";
+import ModelCheckmenu from "@/components/modelCheckmenu.vue";
 
 const isIconRotated = ref(false);
 // 定义子组件触发父组件事件
@@ -183,10 +183,10 @@ p {
   border-bottom: 20px solid #9bd5d5;
   transform-origin: center;
   transition: transform 0.3s ease;
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
 }
 
 .rotate-icon {
-  transform: rotate(-90deg);
+  transform: rotate(90deg);
 }
 </style>

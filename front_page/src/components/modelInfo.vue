@@ -6,7 +6,7 @@
     <div class="box-row">
       <p class="p2">Existing Models</p>
       <div class="box-checkmenu">
-        <checkmenu/>
+        <model-checkmenu/>
       </div>
     </div>
     <div class="box-row">
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import Checkmenu from "@/components/checkmenu.vue";
+import ModelCheckmenu from "@/components/modelCheckmenu.vue";
 
 //定义子组件触发父组件事件
 const emit = defineEmits(['triggerTrain','triggerGraph']);

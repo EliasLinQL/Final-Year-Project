@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import Checkmenu from "@/components/checkmenu.vue";
+import Checkmenu from "@/components/modelCheckmenu.vue";
 
 const emit = defineEmits(["triggerEndTest"]);
 
