@@ -26,7 +26,6 @@ const props = defineProps({
   padding: 0;
   position: relative;
   border-radius: 18px;
-  transition: width 1s ease, height 1s ease;
 }
 .box_switch{
   width: 540px;

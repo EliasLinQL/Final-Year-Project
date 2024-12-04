@@ -2,12 +2,22 @@
 
     <div class="container">
       <transition name="backtest-infofade">
-        <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
+        <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
       </transition>
 
       <transition name="train">
-        <model-train class="train" :class="{ traintrain: hasBeenTrain }" v-if ="isTrainVisible" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain"/>
+        <model-train class="train" :class="{ traintrain: hasBeenTrain||hasBeenCreate }" v-if ="isTrainVisible" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
       </transition>
+
+      <transition name="callpreinfo">
+        <pre-supposed-info class="preinfo" v-if="isModelSetDetailVisible"/>
+      </transition>
+
+
+      <transition name="createnewmodel">
+        <new-model-set class="newmodelset" v-if="hasBeenCreate" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate"/>
+      </transition>
+
 
       <transition name="getloss">
         <train-loss class="loss" v-if="hasBeenTrain"/>
@@ -56,6 +66,8 @@ import RToDBtn from "@/components/rToDBtn.vue";
 import TrainLoss from "@/components/trainLoss.vue";
 import BackTestInfo from "@/components/backTestInfo.vue";
 import TradingViewAPIPart from "@/components/tradingViewAPIPart.vue";
+import NewModelSet from "@/components/newModelSet.vue";
+import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 
 
 const isTrainVisible = ref(false);
@@ -65,39 +77,79 @@ const isDiagramVisible = ref(false);
 const waitisGraphVisible = ref(false);
 const isBackTestVisible = ref(false);
 const btcVisible = ref(false);
+const hasBeenCreate = ref(false);
+const isModelSetDetailVisible = ref(false);
 
 function goTrain() {
-  isDiagramVisible.value = false;
-  setTimeout(()=>{
+  if (isDiagramVisible.value) {
+    isDiagramVisible.value = false;
+    setTimeout(()=>{
+      isTrainVisible.value = true;
+      isGraphVisible.value = false;
+      btcVisible.value = false;
+    },1100);
+  }else {
     isTrainVisible.value = true;
     isGraphVisible.value = false;
     btcVisible.value = false;
-  },1100);
-
+  }
 }
+
 function endTrain() {
   isTrainVisible.value = false;
   hasBeenTrain.value = false;
+  hasBeenCreate.value = false;
+  isModelSetDetailVisible.value = false;
 }
+
 function startTrain() {
   hasBeenTrain.value = true;
+  hasBeenCreate.value = false;
 }
+
+function goCreateModel(){
+  hasBeenCreate.value = true;
+  hasBeenTrain.value = false;
+}
+
+function callDetails(){
+  isModelSetDetailVisible.value = !isModelSetDetailVisible.value;
+}
+
+function createModel(){
+  hasBeenCreate.value = false;
+}
+
+function cancelCreate(){
+  hasBeenCreate.value = false;
+}
+
 function showGraph() {
   isGraphVisible.value = true;
   isTrainVisible.value = false;
   hasBeenTrain.value = false;
+  hasBeenCreate.value = false;
   btcVisible.value = true;
+  isModelSetDetailVisible.value = false;
 }
+
 function rToD(){
   isDiagramVisible.value = !isDiagramVisible.value;
 }
+
 function goBackTest() {
-  isDiagramVisible.value = false;
-  setTimeout(()=>{
+  if (isDiagramVisible.value){
+    isDiagramVisible.value = false;
+    setTimeout(()=>{
+      isBackTestVisible.value = true;
+      isGraphVisible.value = false;
+    },1100);
+  }else {
     isBackTestVisible.value = true;
     isGraphVisible.value = false;
-  },1100);
+  }
 }
+
 function endTest(){
   isBackTestVisible.value = false;
   isGraphVisible.value = true;
@@ -112,8 +164,6 @@ watch(isGraphVisible, (newVal) => {
 </script>
 
 <style scoped>
-
-
   .container {
     height: 100%;
     width: 100%;
@@ -158,7 +208,7 @@ watch(isGraphVisible, (newVal) => {
     position: absolute;
     top: 10%;
     left: 50%;
-    transform: translateX(100px);
+    transition: all 1.8s ease;
     opacity: 1;
   }
 
@@ -168,7 +218,7 @@ watch(isGraphVisible, (newVal) => {
 
   .traintrain{
     transition: all 1s ease;
-    transform: translate(100px,-80px);
+    transform: translate(0px,-80px);
   }
 
   /* 为 model-train 组件的过渡效果 */
@@ -185,12 +235,58 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
+  /*************************/
+  /* preSupposedInfo组件相关 */
+  .preinfo{
+    position: absolute;
+    top: 0%;
+    left: 80%;
+    z-index: 1;
+  }
+
+  .callpreinfo-enter-active,.callpreinfo-leave-active {
+    transition: all 0.8s ease;
+  }
+
+  .callpreinfo-enter-from {
+    transform: translateX(400px);
+    opacity: 1;
+  }
+
+  .callpreinfo-leave-to {
+    transform: translateX(400px);
+    opacity: 1;
+  }
+
+  /*********************/
+  /* newModelSet组件相关 */
+  .newmodelset{
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    transition: all 0.8s ease;
+  }
+
+  .createnewmodel-enter-active,.createnewmodel-leave-active {
+    transition: all 0.8s ease;
+  }
+
+  .createnewmodel-enter-from {
+    transform: translateY(600px);
+    opacity: 1;
+  }
+
+  .createnewmodel-leave-to {
+    transform: translateY(600px);
+    opacity: 1;
+  }
+
   /*******************/
   /* trainLoss组件相关 */
   .loss{
     position: absolute;
     top: 48%;
-    left: 51%;
+    left: 40.2%;
   }
 
   .getloss-enter-active,.getloss-leave-active {
