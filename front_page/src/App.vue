@@ -5,6 +5,8 @@
         <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
       </transition>
 
+      <!-------------------->
+      <!--Model-Train-Part-->
       <transition name="train">
         <model-train class="train" :class="{ traintrain: hasBeenTrain||hasBeenCreate }" v-if ="isTrainVisible" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
       </transition>
@@ -13,16 +15,20 @@
         <pre-supposed-info class="preinfo" v-if="isModelSetDetailVisible"/>
       </transition>
 
-
       <transition name="createnewmodel">
-        <new-model-set class="newmodelset" v-if="hasBeenCreate" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate"/>
+        <new-model-set class="newmodelset" v-if="hasBeenCreate" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate" @trigger-currency-list="callCurrencyList"/>
       </transition>
 
+      <transition name="setcurrency">
+        <currency-list class="currency-list" v-if="isCurrencyListVisible"/>
+      </transition>
 
       <transition name="getloss">
         <train-loss class="loss" v-if="hasBeenTrain"/>
       </transition>
 
+      <!-------------->
+      <!--Graph-Part-->
       <transition name="showGraph-relation">
         <relation class="relation" v-if="waitisGraphVisible" :class="{ swapped: isDiagramVisible }" :state-switch-r="isDiagramVisible"/>
       </transition>
@@ -43,6 +49,8 @@
         <back-test-control class="btc" v-if="btcVisible" @triggerBackTest="goBackTest"/>
       </transition>
 
+      <!----------------->
+      <!--BackTest-Part-->
       <transition name="backtest-infoin">
         <back-test-info v-if="isBackTestVisible" class="back-test-info" @triggerEndTest="endTest"/>
       </transition>
@@ -68,6 +76,7 @@ import BackTestInfo from "@/components/backTestInfo.vue";
 import TradingViewAPIPart from "@/components/tradingViewAPIPart.vue";
 import NewModelSet from "@/components/newModelSet.vue";
 import PreSupposedInfo from "@/components/preSupposedInfo.vue";
+import CurrencyList from "@/components/currencyList.vue";
 
 
 const isTrainVisible = ref(false);
@@ -79,6 +88,7 @@ const isBackTestVisible = ref(false);
 const btcVisible = ref(false);
 const hasBeenCreate = ref(false);
 const isModelSetDetailVisible = ref(false);
+const isCurrencyListVisible = ref(false);
 
 function goTrain() {
   if (isDiagramVisible.value) {
@@ -116,12 +126,18 @@ function callDetails(){
   isModelSetDetailVisible.value = !isModelSetDetailVisible.value;
 }
 
+function callCurrencyList(){
+  isCurrencyListVisible.value = !isCurrencyListVisible.value;
+}
+
 function createModel(){
   hasBeenCreate.value = false;
+  isCurrencyListVisible.value = false;
 }
 
 function cancelCreate(){
   hasBeenCreate.value = false;
+  isCurrencyListVisible.value = false;
 }
 
 function showGraph() {
@@ -131,6 +147,7 @@ function showGraph() {
   hasBeenCreate.value = false;
   btcVisible.value = true;
   isModelSetDetailVisible.value = false;
+  isCurrencyListVisible.value = false;
 }
 
 function rToD(){
@@ -264,20 +281,42 @@ watch(isGraphVisible, (newVal) => {
     position: absolute;
     top: 46%;
     left: 50%;
-    transition: all 0.8s ease;
+    transition: all 1.2s ease;
   }
 
   .createnewmodel-enter-active,.createnewmodel-leave-active {
-    transition: all 0.8s ease;
+    transition: all 1.2s ease;
   }
 
   .createnewmodel-enter-from {
-    transform: translateY(600px);
+    transform: translateY(520px);
     opacity: 1;
   }
 
   .createnewmodel-leave-to {
-    transform: translateY(600px);
+    transform: translateY(520px);
+    opacity: 1;
+  }
+
+  /*********************/
+  /* currencyList组件相关 */
+  .currency-list{
+    position: absolute;
+    top: 46%;
+    left: 4.5%;
+  }
+
+  .setcurrency-enter-active,.setcurrency-leave-active {
+    transition: all 0.8s ease;
+  }
+
+  .setcurrency-enter-from {
+    transform: translate(-840px,150px);
+    opacity: 1;
+  }
+
+  .setcurrency-leave-to {
+    transform: translate(-840px,150px);
     opacity: 1;
   }
 

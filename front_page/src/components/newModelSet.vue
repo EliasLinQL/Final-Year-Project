@@ -3,7 +3,7 @@
     <div class="box-row">
       <p class="p1">New Model Settings</p>
     </div>
-    <div class="box-row model-set">
+    <div class="box-row">
 
     </div>
     <div class="box-row">
@@ -15,7 +15,9 @@
     <div class="box-row">
       <p class="p2">Target<br>Currency</p>
       <div class="box-currencychoose">
-        <currency-checkmenu/>
+        <button class="currencylist" @click="showCurrencyList">
+          {{ isCurrencyListVisible ? 'Close' : 'Show' }}
+        </button>
       </div>
     </div>
     <div class="box-row box-btn">
@@ -26,9 +28,15 @@
 </template>
 
 <script setup>
-import CurrencyCheckmenu from "@/components/currencyCheckmenu.vue";
+import {ref} from "vue";
 
-const emit = defineEmits(["triggerCreateNewModel","triggerCancelCreate"]);
+const emit = defineEmits(["triggerCreateNewModel","triggerCancelCreate","triggerCurrencyList"]);
+const isCurrencyListVisible = ref(false);
+
+function showCurrencyList() {
+  isCurrencyListVisible.value = !isCurrencyListVisible.value;
+  emit("triggerCurrencyList");
+}
 
 function createModel() {
   emit("triggerCreateNewModel");
@@ -42,7 +50,7 @@ function Cancel() {
 .box-column {
   background-color: #757575;
   width: 520px;
-  height: 480px;
+  height: 320px;
   margin: 10px;
   border-radius: 18px;
   position: relative;
@@ -87,7 +95,7 @@ p {
   z-index: 1;
 }
 .btn {
-  margin-top: 184px;
+  margin-top: 20px;
   margin-bottom: 5px;
   width: 158px;
   height: 38px;
@@ -111,5 +119,28 @@ p {
 
 .box-btn {
   justify-content: space-around;
+}
+.currencylist {
+  width: 68px;
+  height: 52px;
+  background-color: rgba(86, 182, 157, 0.6);
+  border: 2px solid rgba(71, 152, 130, 0.6);
+  box-shadow: 1px 2px 4px rgba(84, 198, 195, 0.6);
+  border-radius: 24%;
+  margin-right: 20px;
+  position: absolute;
+  transform: translate(0px, -6px);
+  transition: all 0.2s ease;
+  font-size: 20px;
+  color: #c1d0dd;
+}
+
+.currencylist:hover {
+  background-color: rgba(102, 198, 175, 0.6);
+  opacity: 0.8;
+}
+
+.currencylist:active {
+  background-color: rgba(118, 214, 190, 0.6);
 }
 </style>

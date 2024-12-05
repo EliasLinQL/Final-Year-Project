@@ -18,9 +18,9 @@
     </div>
     <div class="box-row">
       <p class="p2">PreSupposed<br>Details</p>
-      <div class="detail" @click="callDetail">
-        <div :class="['icon', { 'rotate-icon': isIconRotated }]"></div>
-      </div>
+      <button class="detail" @click="callDetail">
+        {{ isIconRotated ? 'Close' : 'Show' }}
+      </button>
     </div>
     <div class="box-row box-btn">
       <button class="btn" @click="endTrain">End Training</button>
@@ -163,30 +163,28 @@ p {
 }
 
 .detail {
-  width: 50px;
+  width: 68px;
   height: 52px;
   background-color: rgba(86, 182, 157, 0.6);
-  border-radius: 36%;
+  border: 2px solid rgba(71, 152, 130, 0.6);
+  box-shadow: 1px 2px 4px rgba(84, 198, 195, 0.6);
+  border-radius: 24%;
   margin-right: 20px;
   position: absolute;
   transform: translate(180px, 24px);
+  transition: all 0.2s ease;
+  font-size: 20px;
+  color: #c1d0dd;
 }
 
-.icon {
-  position: absolute;
-  top: 15px;
-  left: 13px;
-  width: 1px;
-  height: 2px;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 20px solid #9bd5d5;
-  transform-origin: center;
-  transition: transform 0.3s ease;
-  transform: rotate(-90deg);
+.detail:hover {
+  background-color: rgba(102, 198, 175, 0.6);
+  opacity: 0.8;
 }
 
-.rotate-icon {
-  transform: rotate(90deg);
+.detail:active {
+  background-color: rgba(118, 214, 190, 0.6);
 }
+
+
 </style>
