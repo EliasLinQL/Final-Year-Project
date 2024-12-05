@@ -2,6 +2,8 @@
   <div class="box-column">
     <div class="box-0">
       <p class="p1">Currency List</p>
+      <button class="currency-submit" @click="submit">Create</button>
+      <button class="currency-cancel" @click="cancel">Cancel</button>
     </div>
     <div class="box-row">
       <div class="box-currency">
@@ -269,7 +271,16 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+
+const emit = defineEmits(["triggerSubmit","triggerCancel"]);
+
+function submit(){
+  emit("triggerSubmit");
+}
+function cancel(){
+  emit("triggerCancel");
+}
+
 
 
 </script>
@@ -286,6 +297,49 @@ import {ref} from "vue";
 }
 .box-0{
   margin: 4px 0 10px 10px;
+  display: flex;
+  align-items: center;
+}
+.currency-submit{
+  background-color: #3A708D;
+  border: 2px solid #346884;
+  box-shadow: 1px 2px 4px #346884;
+  width: 120px;
+  height: 40px;
+  font-size: 20px;
+  color: #E0E0E0;
+  margin-left: 248px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+.currency-submit:hover {
+  background-color: #286487;
+  opacity: 0.8;
+}
+
+.currency-submit:active {
+  background-color: #246893;
+}
+
+.currency-cancel{
+  background-color: #3A708D;
+  border: 2px solid #346884;
+  box-shadow: 1px 2px 4px #346884;
+  width: 120px;
+  height: 40px;
+  font-size: 20px;
+  color: #E0E0E0;
+  margin-left: 30px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+.currency-cancel:hover {
+  background-color: #286487;
+  opacity: 0.8;
+}
+
+.currency-cancel:active {
+  background-color: #246893;
 }
 .box-row {
   border-radius: 12px;

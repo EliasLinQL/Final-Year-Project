@@ -28,7 +28,11 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {ref, watch} from "vue";
+
+const props = defineProps({
+  message: false
+})
 
 const emit = defineEmits(["triggerCreateNewModel","triggerCancelCreate","triggerCurrencyList"]);
 const isCurrencyListVisible = ref(false);
@@ -44,6 +48,9 @@ function createModel() {
 function Cancel() {
   emit("triggerCancelCreate");
 }
+watch(props, (newval) => {
+  isCurrencyListVisible.value = newval.message;
+})
 </script>
 
 <style scoped>

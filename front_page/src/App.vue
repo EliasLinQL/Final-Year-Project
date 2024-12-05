@@ -16,11 +16,11 @@
       </transition>
 
       <transition name="createnewmodel">
-        <new-model-set class="newmodelset" v-if="hasBeenCreate" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate" @trigger-currency-list="callCurrencyList"/>
+        <new-model-set class="newmodelset" v-if="hasBeenCreate" :message="isCurrencyListVisible" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate" @trigger-currency-list="callCurrencyList"/>
       </transition>
 
       <transition name="setcurrency">
-        <currency-list class="currency-list" v-if="isCurrencyListVisible"/>
+        <currency-list class="currency-list" v-if="isCurrencyListVisible" @trigger-submit="currencySubmit" @trigger-cancel="currencyCancel"/>
       </transition>
 
       <transition name="getloss">
@@ -110,6 +110,7 @@ function endTrain() {
   hasBeenTrain.value = false;
   hasBeenCreate.value = false;
   isModelSetDetailVisible.value = false;
+  isCurrencyListVisible.value = false;
 }
 
 function startTrain() {
@@ -128,6 +129,13 @@ function callDetails(){
 
 function callCurrencyList(){
   isCurrencyListVisible.value = !isCurrencyListVisible.value;
+}
+
+function currencySubmit(){
+  isCurrencyListVisible.value = false;
+}
+function currencyCancel(){
+  isCurrencyListVisible.value = false;
 }
 
 function createModel(){
