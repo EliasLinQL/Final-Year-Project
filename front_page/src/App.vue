@@ -1,6 +1,8 @@
 <template>
 
     <div class="container">
+      <!------------------->
+      <!--Model-Info-Part-->
       <transition name="backtest-infofade">
         <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
       </transition>
@@ -311,7 +313,7 @@ watch(isGraphVisible, (newVal) => {
   .currency-list{
     position: absolute;
     top: 46%;
-    left: 4.5%;
+    left: 19%;
   }
 
   .setcurrency-enter-active,.setcurrency-leave-active {
@@ -492,4 +494,5 @@ watch(isGraphVisible, (newVal) => {
     transform: translateY(1400px);
     opacity: 1;
   }
+
 </style>

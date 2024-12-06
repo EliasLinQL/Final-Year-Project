@@ -5,302 +5,109 @@
       <button class="currency-submit" @click="submit">Create</button>
       <button class="currency-cancel" @click="cancel">Cancel</button>
     </div>
-    <div class="box-row">
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
+    <div class="box-1">
+      <div class="box-currency" v-for="(currency, index) in currencies" :key="index">
 
-        </div>
+        <input type="checkbox" class="check" v-model="currency.selected" />
+
+        <div class="icon"></div>
+
         <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
+          <p class="p2">{{ currency.name }}</p>
         </div>
-        <div class="starttime">
 
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
+        <div class="timeset">
+          <DatePicker
+              v-model="currency.dates"
+              format="yyyy-MM-dd HH:mm:ss"
+              range
+              :teleport="true"
+              style="width: 400px; height: 24px; font-size: 12px;"
+          />
         </div>
       </div>
     </div>
-    <div class="box-row">
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-    </div>
-    <div class="box-row">
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-      <div class="box-currency">
-        <input type="checkbox" class="check">
-        <div class="icon">
-
-        </div>
-        <div class="name">
-          <p class="p2">
-            DOGE
-          </p>
-        </div>
-        <div class="starttime">
-
-        </div>
-        <div class="endtime">
-
-        </div>
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
+import DatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
-const emit = defineEmits(["triggerSubmit","triggerCancel"]);
+const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
-function submit(){
-  emit("triggerSubmit");
+// 初始化货币数据
+const currencies = ref([
+  { name: 'DOGE', dates: ['', ''], selected: false },
+  { name: 'BTC', dates: ['', ''], selected: false },
+  { name: 'ETH', dates: ['', ''], selected: false },
+  { name: 'LQF', dates: ['', ''], selected: false },
+]);
+
+
+function submit() {
+
+  emit("triggerSubmit", currencies.value);
 }
-function cancel(){
+
+function cancel() {
+
   emit("triggerCancel");
 }
-
-
-
 </script>
 
 <style scoped>
 .box-column {
   background-color: #757575;
-  width: 720px;
+  width: 500px;
   height: 480px;
   margin: 10px;
   border-radius: 18px;
   display: flex;
   flex-direction: column;
 }
-.box-0{
+
+.box-0 {
   margin: 4px 0 10px 10px;
   display: flex;
   align-items: center;
 }
-.currency-submit{
+
+.box-1 {
+  background-color: #a6aaa6;
+  border-radius: 12px;
+  margin: 4px 0 8px 16px;
+  width: 460px;
+  height: 372px;
+  overflow: auto;
+  position: relative;
+}
+
+.box-1::-webkit-scrollbar {
+  width: 16px;
+}
+
+.box-1::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 12px;
+}
+
+.box-1::-webkit-scrollbar-thumb {
+  background-color: #bfc4cc;
+  border-radius: 12px;
+}
+
+.box-currency {
+  margin: 6px 6px;
+  width: 420px;
+  height: 98px;
+  position: relative;
+  border-radius: 10px;
+  background-color: #595555;
+}
+
+.currency-submit {
   background-color: #3A708D;
   border: 2px solid #346884;
   box-shadow: 1px 2px 4px #346884;
@@ -308,10 +115,12 @@ function cancel(){
   height: 40px;
   font-size: 20px;
   color: #E0E0E0;
-  margin-left: 248px;
+  margin-left: 30px;
+  margin-top: 8px;
   border-radius: 16px;
   transition: all 0.2s ease;
 }
+
 .currency-submit:hover {
   background-color: #286487;
   opacity: 0.8;
@@ -321,7 +130,7 @@ function cancel(){
   background-color: #246893;
 }
 
-.currency-cancel{
+.currency-cancel {
   background-color: #3A708D;
   border: 2px solid #346884;
   box-shadow: 1px 2px 4px #346884;
@@ -330,9 +139,11 @@ function cancel(){
   font-size: 20px;
   color: #E0E0E0;
   margin-left: 30px;
+  margin-top: 8px;
   border-radius: 16px;
   transition: all 0.2s ease;
 }
+
 .currency-cancel:hover {
   background-color: #286487;
   opacity: 0.8;
@@ -340,22 +151,6 @@ function cancel(){
 
 .currency-cancel:active {
   background-color: #246893;
-}
-.box-row {
-  border-radius: 12px;
-  display: flex;
-  flex-direction: row;
-  margin: 8px 0 8px 10px;
-  width: 700px;
-  height: 100%;
-}
-.box-currency{
-  margin: 2px 8px;
-  width: 130px;
-  height: 110px;
-  position: relative;
-  border-radius: 10px;
-  background-color: #595555;
 }
 
 .p1 {
@@ -371,51 +166,48 @@ function cancel(){
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
 p {
   margin: 0;
   margin-top: 4px;
   font-family: Microsoft YaHei;
   color: #E0E0E0;
 }
-.icon{
+
+.icon {
   position: absolute;
   background-color: #ffffff;
   height: 38px;
   width: 38px;
-  left: 24px;
+  left: 9px;
   border-radius: 16px;
-  margin-top: 2px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
-.check{
+
+.check {
   position: absolute;
   background-color: #ffffff;
-  top: 10px;
-  height: 18px;
-  width: 18px;
+  top: 6px;
+  right: 7px;
+  height: 28px;
+  width: 28px;
 }
-.name{
+
+.name {
   position: absolute;
   top: 5%;
   left: 64px;
   width: 50px;
   height: 30px;
 }
-.starttime{
+
+.timeset {
   position: absolute;
-  top: 39%;
-  background-color: #777171;
+  top: 49%;
+  left: 9px;
   border-radius: 8px;
-  margin-left: 2px;
-  width: 120px;
-  height: 30px;
-}
-.endtime{
-  position: absolute;
-  top: 69%;
-  background-color: #777171;
-  border-radius: 8px;
-  margin-left: 2px;
-  width: 120px;
+  width: 100%;
   height: 30px;
 }
 </style>
