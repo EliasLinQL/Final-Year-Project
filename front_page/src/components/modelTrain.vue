@@ -5,7 +5,7 @@
     </div>
     <div class="box-row model-set">
       <p class="p2 model-set">Model Settings</p>
-      <train-checkmenu class="check-part" :trainsettings="trainSettings"/>
+      <train-checkmenu class="check-part" :trainsettings="trainSettings" @triggerTrainSetCheck="setTrainSet"/>
       <button class="add-btn" @click="createModel">
         +
       </button>
@@ -13,7 +13,7 @@
     <div class="box-row">
       <p class="p2">ModelSetName</p>
       <div class="data-area-name">
-
+        {{ selectedTrainSet?.name || 'No TrainSet Selected' }}
       </div>
     </div>
     <div class="box-row">
@@ -35,6 +35,7 @@ import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
 
 const isIconRotated = ref(false);
 const trainSettings = ref([]);
+const selectedTrainSet = ref(null);
 
 const emit = defineEmits(["triggerEndTrain", "triggerStartTrain","triggerDetails","triggerGoCreate"]);
 const props = defineProps({
@@ -54,9 +55,12 @@ function callDetail() {
 function createModel(){
   emit("triggerGoCreate");
 }
+function setTrainSet(selectedItem) {
+  selectedTrainSet.value = selectedItem;
+}
 
 watch(props, (newval) => {
-  trainSettings.value.push(newval.trainset)
+  trainSettings.value.push(newval.trainset);
 })
 
 </script>
@@ -167,6 +171,9 @@ p {
   margin-right: 20px;
   position: absolute;
   transform: translate(180px, 19px);
+  text-align: center;
+  line-height: 44px;
+  color: #e8e8e8;
 }
 
 .detail {

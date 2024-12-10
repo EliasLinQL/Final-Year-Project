@@ -8,7 +8,9 @@
     <transition name="checkbox-fade">
       <div v-show="isMenuVisible" class="checkbox-container">
         <label v-for="(model, index) in models" :key="index">
-          <input type="checkbox" v-model="model.selected" />
+          <input type="radio"
+                 v-model="selectedModel"
+                 :value="model.name" />
           {{ model.name }}
         </label>
       </div>
@@ -17,33 +19,43 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 
+const emit = defineEmits(["triggerTrainSetCheck"])
 const props = defineProps({
-  trainsettings:{type: Array}
-})
+  trainsettings: { type: Array }
+});
 
 const isMenuVisible = ref(false);
-
-// 模型数据数组
 const models = ref([]);
+const selectedModel = ref(null);
 
 function toggleMenu() {
   // 切换选单显示和隐藏状态
   isMenuVisible.value = !isMenuVisible.value;
 }
 
+watch(selectedModel, (newval) => {
+  if (newval) {
+    isMenuVisible.value = false;
+    // 找到选中的 name 对应的 trainset
+    const selectedItem = models.value.find(model => model.name === newval);
+    console.log(selectedItem);
+    if (selectedItem) {
+      // 通过 emit 触发事件并传递对应的 trainset
+      emit("triggerTrainSetCheck", selectedItem);
+    }
+  }
+})
+
 watch(() => props.trainsettings, (newval) => {
   if (newval && newval.length) {
     models.value = newval.map(model => ({
       name: model.name,
-      trainset: model.trainset,
-      selected: false
+      currencies: model.currencies,
     }));
   }
-}, { deep: true });
-
-
+}, {deep: true,immediate: true});
 </script>
 
 <style scoped>
@@ -101,7 +113,6 @@ watch(() => props.trainsettings, (newval) => {
   margin-right: 10px;
 }
 
-/* 添加过渡动画 */
 .checkbox-fade-enter-active,
 .checkbox-fade-leave-active {
   transition: all 0.4s linear;
