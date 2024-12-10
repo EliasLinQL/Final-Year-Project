@@ -17,22 +17,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
+
+const props = defineProps({
+  trainsettings:{type: Array}
+})
 
 const isMenuVisible = ref(false);
 
 // 模型数据数组
-const models = ref([
-  { name: 'Model q', selected: false },
-  { name: 'Model 2', selected: false },
-  { name: 'Model 3', selected: false },
-  { name: 'Model 4', selected: false },
-]);
+const models = ref([]);
 
 function toggleMenu() {
   // 切换选单显示和隐藏状态
   isMenuVisible.value = !isMenuVisible.value;
 }
+
+watch(() => props.trainsettings, (newval) => {
+  if (newval && newval.length) {
+    models.value = newval.map(model => ({
+      name: model.name,
+      trainset: model.trainset,
+      selected: false
+    }));
+  }
+}, { deep: true });
+
+
 </script>
 
 <style scoped>

@@ -3,13 +3,11 @@
     <div class="box-row">
       <p class="p1">New Model Settings</p>
     </div>
-    <div class="box-row">
-
-    </div>
+    <div class="box-row"></div>
     <div class="box-row">
       <p class="p2">ModelSet<br>Name</p>
       <div class="data-area-name">
-
+        <input class="nameinput" type="text" v-model="modelSetName" />
       </div>
     </div>
     <div class="box-row">
@@ -29,9 +27,13 @@
 
 <script setup>
 import {ref, watch} from "vue";
+import ModelSet from "@/bean/modelSet.js";
+
+const modelSetName = ref("");
 
 const props = defineProps({
-  message: false
+  message: false,
+  currencies: {type: Array}
 })
 
 const emit = defineEmits(["triggerCreateNewModel","triggerCancelCreate","triggerCurrencyList"]);
@@ -43,11 +45,14 @@ function showCurrencyList() {
 }
 
 function createModel() {
-  emit("triggerCreateNewModel");
+  const newModelSet = new ModelSet(modelSetName.value, props.currencies);
+  emit("triggerCreateNewModel", newModelSet);
 }
+
 function Cancel() {
   emit("triggerCancelCreate");
 }
+
 watch(props, (newval) => {
   isCurrencyListVisible.value = newval.message;
 })
@@ -82,11 +87,13 @@ watch(props, (newval) => {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
 p {
   margin: 15px;
   font-family: Microsoft YaHei;
   color: #E0E0E0;
 }
+
 .data-area-name {
   width: 268px;
   height: 44px;
@@ -95,12 +102,25 @@ p {
   position: absolute;
   transform: translate(150px, 12px);
 }
+
+.nameinput {
+  margin-left: 2px;
+  margin-top: 1.4px;
+  width: 96%;
+  height: 80%;
+  background-color: #9c9898;
+  border: 2px solid #6e6b6b;
+  border-radius: 6px;
+}
+
+
 .box-currencychoose{
   margin-right: 20px;
   position: absolute;
   transform: translate(150px, 12px);
   z-index: 1;
 }
+
 .btn {
   margin-top: 20px;
   margin-bottom: 5px;
@@ -127,6 +147,7 @@ p {
 .box-btn {
   justify-content: space-around;
 }
+
 .currencylist {
   width: 68px;
   height: 52px;

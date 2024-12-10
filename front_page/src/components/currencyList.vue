@@ -6,19 +6,28 @@
       <button class="currency-cancel" @click="cancel">Cancel</button>
     </div>
     <div class="box-1">
-      <div class="box-currency" v-for="(currency, index) in currencies" :key="index">
-
-        <input type="checkbox" class="check" v-model="currency.selected" />
+      <div
+          class="box-currency"
+          v-for="(currencyObj, index) in currencies"
+          :key="index"
+      >
+        <!-- 使用 selected 属性绑定复选框 -->
+        <input
+            type="checkbox"
+            class="check"
+            v-model="currencyObj.selected"
+        />
 
         <div class="icon"></div>
 
         <div class="name">
-          <p class="p2">{{ currency.name }}</p>
+          <p class="p2">{{ currencyObj.currency.getName() }}</p>
         </div>
 
+        <!-- 日期范围绑定 -->
         <div class="timeset">
           <DatePicker
-              v-model="currency.dates"
+              v-model="currencyObj.currency.dates"
               format="yyyy-MM-dd HH:mm:ss"
               range
               :teleport="true"
@@ -32,27 +41,31 @@
 
 <script setup>
 import { ref } from "vue";
-import DatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+import DatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import CurrencySet from "@/bean/currencySet.js";
 
+// 定义 `emit` 事件
 const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
 // 初始化货币数据
 const currencies = ref([
-  { name: 'DOGE', dates: ['', ''], selected: false },
-  { name: 'BTC', dates: ['', ''], selected: false },
-  { name: 'ETH', dates: ['', ''], selected: false },
-  { name: 'LQF', dates: ['', ''], selected: false },
+  { currency: new CurrencySet("DOGE", ["", ""]), selected: false },
+  { currency: new CurrencySet("BTC", ["", ""]), selected: false },
+  { currency: new CurrencySet("ETH", ["", ""]), selected: false },
+  { currency: new CurrencySet("LQF", ["", ""]), selected: false },
 ]);
 
-
+// 提交和取消方法
 function submit() {
-
-  emit("triggerSubmit", currencies.value);
+  // 提交已选中的货币数据
+  const selectedCurrencies = currencies.value
+      .filter((item) => item.selected)
+      .map((item) => item.currency);
+  emit("triggerSubmit", selectedCurrencies);
 }
 
 function cancel() {
-
   emit("triggerCancel");
 }
 </script>

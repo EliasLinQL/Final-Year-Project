@@ -5,7 +5,7 @@
     </div>
     <div class="box-row model-set">
       <p class="p2 model-set">Model Settings</p>
-      <model-checkmenu class="check-part"/>
+      <train-checkmenu class="check-part" :trainsettings="trainSettings"/>
       <button class="add-btn" @click="createModel">
         +
       </button>
@@ -30,14 +30,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import ModelCheckmenu from "@/components/modelCheckmenu.vue";
+import {ref, watch} from 'vue';
+import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
 
 const isIconRotated = ref(false);
-// 定义子组件触发父组件事件
-const emit = defineEmits(["triggerEndTrain", "triggerStartTrain","triggerDetails","triggerGoCreate"]);
+const trainSettings = ref([]);
 
-// 通知父组件触发对应事件
+const emit = defineEmits(["triggerEndTrain", "triggerStartTrain","triggerDetails","triggerGoCreate"]);
+const props = defineProps({
+  trainset: {type: Object}
+})
+
 function endTrain() {
   emit("triggerEndTrain");
 }
@@ -51,6 +54,10 @@ function callDetail() {
 function createModel(){
   emit("triggerGoCreate");
 }
+
+watch(props, (newval) => {
+  trainSettings.value.push(newval.trainset)
+})
 
 </script>
 

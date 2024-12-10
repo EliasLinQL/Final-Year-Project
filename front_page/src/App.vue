@@ -10,7 +10,7 @@
       <!-------------------->
       <!--Model-Train-Part-->
       <transition name="train">
-        <model-train class="train" :class="{ traintrain: hasBeenTrain||hasBeenCreate }" v-if ="isTrainVisible" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
+        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :trainset="ModelSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
       </transition>
 
       <transition name="callpreinfo">
@@ -18,7 +18,7 @@
       </transition>
 
       <transition name="createnewmodel">
-        <new-model-set class="newmodelset" v-if="hasBeenCreate" :message="isCurrencyListVisible" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate" @trigger-currency-list="callCurrencyList"/>
+        <new-model-set class="newmodelset" v-if="hasBeenCreate" :message="isCurrencyListVisible" :currencies="Currencies" @trigger-create-new-model="createModel" @trigger-cancel-create="cancelCreate" @trigger-currency-list="callCurrencyList"/>
       </transition>
 
       <transition name="setcurrency">
@@ -80,7 +80,7 @@ import NewModelSet from "@/components/newModelSet.vue";
 import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 import CurrencyList from "@/components/currencyList.vue";
 
-
+//控制参数
 const isTrainVisible = ref(false);
 const isGraphVisible = ref(false);
 const hasBeenTrain = ref(false);
@@ -91,6 +91,11 @@ const btcVisible = ref(false);
 const hasBeenCreate = ref(false);
 const isModelSetDetailVisible = ref(false);
 const isCurrencyListVisible = ref(false);
+
+//通讯数据
+const Currencies = ref([]);
+const ModelSet = ref([]);
+
 
 function goTrain() {
   if (isDiagramVisible.value) {
@@ -118,6 +123,7 @@ function endTrain() {
 function startTrain() {
   hasBeenTrain.value = true;
   hasBeenCreate.value = false;
+  isCurrencyListVisible.value = false;
 }
 
 function goCreateModel(){
@@ -133,14 +139,19 @@ function callCurrencyList(){
   isCurrencyListVisible.value = !isCurrencyListVisible.value;
 }
 
-function currencySubmit(){
+//提交选中货币数据到newModelSet
+function currencySubmit(selectedCurrencies){
+  Currencies.value = selectedCurrencies;
   isCurrencyListVisible.value = false;
 }
+
 function currencyCancel(){
   isCurrencyListVisible.value = false;
 }
 
-function createModel(){
+//将数据发送到modelTrain组件
+function createModel(newModelSet){
+  ModelSet.value = newModelSet;
   hasBeenCreate.value = false;
   isCurrencyListVisible.value = false;
 }
@@ -320,13 +331,8 @@ watch(isGraphVisible, (newVal) => {
     transition: all 0.8s ease;
   }
 
-  .setcurrency-enter-from {
-    transform: translate(-840px,150px);
-    opacity: 1;
-  }
-
-  .setcurrency-leave-to {
-    transform: translate(-840px,150px);
+  .setcurrency-leave-to,.setcurrency-enter-from {
+    transform: translate(-900px,160px);
     opacity: 1;
   }
 
