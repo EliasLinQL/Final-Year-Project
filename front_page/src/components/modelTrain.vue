@@ -5,7 +5,11 @@
     </div>
     <div class="box-row model-set">
       <p class="p2 model-set">Model Settings</p>
-      <train-checkmenu class="check-part" :trainsettings="trainSettings" @triggerTrainSetCheck="setTrainSet"/>
+      <train-checkmenu
+          class="check-part"
+          :trainsettings="trainSettings"
+          @triggerTrainSetCheck="setTrainSet"
+      />
       <button class="add-btn" @click="createModel">
         +
       </button>
@@ -30,39 +34,73 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue';
+import {ref, watch, onMounted} from "vue";
 import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
 
 const isIconRotated = ref(false);
 const trainSettings = ref([]);
 const selectedTrainSet = ref(null);
 
-const emit = defineEmits(["triggerEndTrain", "triggerStartTrain","triggerDetails","triggerGoCreate"]);
+const emit = defineEmits([
+  "triggerEndTrain",
+  "triggerStartTrain",
+  "triggerDetails",
+  "triggerGoCreate",
+]);
 const props = defineProps({
-  newtrainset: {type: Object}
-})
+  newtrainset: {type: Object},
+});
 
 function endTrain() {
   emit("triggerEndTrain");
 }
+
 function startTrain() {
   emit("triggerStartTrain");
 }
+
 function callDetail() {
   isIconRotated.value = !isIconRotated.value;
-  emit("triggerDetail",selectedTrainSet);
+  emit("triggerDetail", selectedTrainSet);
 }
-function createModel(){
+
+function createModel() {
   emit("triggerGoCreate");
 }
+
 function setTrainSet(selectedItem) {
   selectedTrainSet.value = selectedItem;
+  updateLocalStorage();
 }
 
-watch(props, (newval) => {
-  trainSettings.value.push(newval.newtrainset);
-})
+// 从 LocalStorage 初始化 trainSettings
+onMounted(() => {
+  const savedSettings = localStorage.getItem("trainSettings");
+  if (savedSettings) {
+    trainSettings.value = JSON.parse(savedSettings);
+  }
+});
 
+// 当 trainSettings 改变时自动存储到 LocalStorage
+watch(
+    trainSettings,
+    (newval) => {
+      updateLocalStorage();
+    },
+    {deep: true}
+);
+
+// 添加新数据到 trainSettings，并存储
+watch(props, (newval) => {
+  if (newval.newtrainset) {
+    trainSettings.value.push(newval.newtrainset);
+  }
+});
+
+// 更新 LocalStorage 的函数
+function updateLocalStorage() {
+  localStorage.setItem("trainSettings", JSON.stringify(trainSettings.value));
+}
 </script>
 
 <style scoped>
@@ -106,9 +144,9 @@ watch(props, (newval) => {
   width: 42px;
   height: 42px;
   border-radius: 16px;
-  border: 2px solid #A0B5B1;
+  border: 2px solid #a0b5b1;
   box-shadow: 1px 2px 2px #86a5a5;
-  background-color: #A0B5B1;
+  background-color: #a0b5b1;
   top: 19%;
   left: 70%;
   font-size: 36px;
@@ -118,12 +156,12 @@ watch(props, (newval) => {
 }
 
 .add-btn:hover {
-  background-color: #8DB2AB;
+  background-color: #8db2ab;
   opacity: 0.8;
 }
 
 .add-btn:active {
-  background-color: #7DAFA5;
+  background-color: #7daf95;
 }
 
 .model-set {
@@ -134,7 +172,7 @@ watch(props, (newval) => {
 p {
   margin: 15px;
   font-family: Microsoft YaHei;
-  color: #E0E0E0;
+  color: #e0e0e0;
 }
 
 .btn {
@@ -142,11 +180,11 @@ p {
   margin-bottom: 5px;
   width: 158px;
   height: 38px;
-  background-color: #3A708D;
+  background-color: #3a708d;
   border: 2px solid #346884;
   border-radius: 12px;
   font-size: 20px;
-  color: #E0E0E0;
+  color: #e0e0e0;
   box-shadow: 1px 2px 4px #346884;
   transition: all 0.2s ease;
 }
@@ -167,7 +205,7 @@ p {
 .data-area-name {
   width: 268px;
   height: 44px;
-  background-color: #827E7E;
+  background-color: #827e7e;
   margin-right: 20px;
   position: absolute;
   transform: translate(180px, 19px);
@@ -199,6 +237,4 @@ p {
 .detail:active {
   background-color: rgba(118, 214, 190, 0.6);
 }
-
-
 </style>

@@ -6,11 +6,12 @@
     <p class="pname">PreName: {{ selectedTrainSet.name }}</p>
     <div class="box-list">
       <div class="box-currency" v-for="(currencyObj, index) in selectedTrainSet.currencies" :key="index">
-        <div class="icon"></div>
+        <div class="icon">
+          <img :src="currencyObj.getIcon()" class="currency-icon" />
+        </div>
         <div class="name">
           <p class="p2">{{ currencyObj.getName() }}</p>
         </div>
-
         <!-- 日期范围显示 -->
         <div class="timeset">
           <p class="p3">{{ formatDate(currencyObj.getDates()[0]) }}</p>
@@ -20,6 +21,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, watch } from "vue";
@@ -31,14 +33,14 @@ function formatDate(date) {
   if (!date) return "N/A";
   const d = new Date(date);
   if (isNaN(d)) return "Invalid Date";
-  return d.toLocaleString("en-GB", { // 使用en-GB确保24小时制
+  return d.toLocaleString("en-GB", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).replace(",", ""); // 去掉多余的逗号
+  }).replace(",", "");
 }
 
 const selectedTrainSet = ref(new ModelSet("", []));
@@ -51,18 +53,22 @@ watch(
     () => props.trainset,
     (newval) => {
       if (newval) {
-        // 确保 currencies 被转换为 CurrencySet 的实例
         selectedTrainSet.value = new ModelSet(
             newval.name,
             (newval.currencies || []).map(
                 (currency) =>
-                    new CurrencySet(currency.name, currency.dates || ["", ""])
+                    new CurrencySet(
+                        currency.name,
+                        currency.dates || ["", ""],
+                        currency.icon
+                    )
             )
         );
       }
     },
     { immediate: true }
 );
+
 </script>
 
 <style scoped>
@@ -118,7 +124,7 @@ watch(
 }
 .icon {
   position: absolute;
-  background-color: #ffffff;
+  background-color: #504d4d;
   height: 48px;
   width: 48px;
   left: 9px;
@@ -126,6 +132,13 @@ watch(
   margin-top: 8px;
   margin-bottom: 4px;
 }
+.currency-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
 .name {
   position: absolute;
   top: -10px;

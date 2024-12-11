@@ -1,7 +1,8 @@
 class CurrencySet {
-    constructor(name, dates) {
+    constructor(name, dates, icon) {
         this.name = name;
         this.dates = dates;
+        this.icon = icon;
     }
 
     getName() {
@@ -15,6 +16,12 @@ class CurrencySet {
     }
     setDates(dates) {
         this.dates = dates;
+    }
+    getIcon() {
+        return this.icon;
+    }
+    setIcon(icon) {
+        this.icon = icon;
     }
 }
 

@@ -18,7 +18,9 @@
             v-model="currencyObj.selected"
         />
 
-        <div class="icon"></div>
+        <div class="icon">
+          <img :src="currencyObj.currency.getIcon()" class="currency-icon" />
+        </div>
 
         <div class="name">
           <p class="p2">{{ currencyObj.currency.getName() }}</p>
@@ -50,11 +52,17 @@ const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
 // 初始化货币数据
 const currencies = ref([
-  { currency: new CurrencySet("DOGE", ["", ""]), selected: false },
-  { currency: new CurrencySet("BTC", ["", ""]), selected: false },
-  { currency: new CurrencySet("ETH", ["", ""]), selected: false },
-  { currency: new CurrencySet("LQF", ["", ""]), selected: false },
+  { currency: new CurrencySet("DOGE", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
+  { currency: new CurrencySet("BTC", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
+  { currency: new CurrencySet("ETH", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
+  { currency: new CurrencySet("USDT", ["", ""], "/currency_icon/tether-usdt-logo.png"), selected: false },
+  { currency: new CurrencySet("SOL", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
+  { currency: new CurrencySet("XRP", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
+  { currency: new CurrencySet("BNB", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
+  { currency: new CurrencySet("PEPE", ["", ""], "/currency_icon/pepe-pepe-logo.png"), selected: false },
+  { currency: new CurrencySet("RAY", ["", ""], "/currency_icon/raydium-ray-logo.png"), selected: false },
 ]);
+
 
 
 function submit() {
@@ -188,13 +196,20 @@ p {
 
 .icon {
   position: absolute;
-  background-color: #ffffff;
+  background-color: #504d4d;
   height: 38px;
   width: 38px;
   left: 9px;
-  border-radius: 16px;
+  border-radius: 19px;
   margin-top: 4px;
   margin-bottom: 4px;
+}
+
+.currency-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
 }
 
 .check {

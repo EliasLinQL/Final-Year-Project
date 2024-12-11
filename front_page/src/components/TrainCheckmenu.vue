@@ -40,7 +40,6 @@ watch(selectedModel, (newval) => {
     isMenuVisible.value = false;
     // 找到选中的 name 对应的 trainset
     const selectedItem = models.value.find(model => model.name === newval);
-    console.log(selectedItem);
     if (selectedItem) {
       // 通过 emit 触发事件并传递对应的 trainset
       emit("triggerTrainSetCheck", selectedItem);
