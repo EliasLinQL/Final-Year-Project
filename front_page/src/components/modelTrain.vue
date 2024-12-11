@@ -39,7 +39,7 @@ const selectedTrainSet = ref(null);
 
 const emit = defineEmits(["triggerEndTrain", "triggerStartTrain","triggerDetails","triggerGoCreate"]);
 const props = defineProps({
-  trainset: {type: Object}
+  newtrainset: {type: Object}
 })
 
 function endTrain() {
@@ -50,7 +50,7 @@ function startTrain() {
 }
 function callDetail() {
   isIconRotated.value = !isIconRotated.value;
-  emit("triggerDetail");
+  emit("triggerDetail",selectedTrainSet);
 }
 function createModel(){
   emit("triggerGoCreate");
@@ -60,7 +60,7 @@ function setTrainSet(selectedItem) {
 }
 
 watch(props, (newval) => {
-  trainSettings.value.push(newval.trainset);
+  trainSettings.value.push(newval.newtrainset);
 })
 
 </script>

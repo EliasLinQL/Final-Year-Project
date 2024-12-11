@@ -45,7 +45,7 @@ import DatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import CurrencySet from "@/bean/currencySet.js";
 
-// 定义 `emit` 事件
+// 定义emit事件
 const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
 // 初始化货币数据
@@ -56,9 +56,8 @@ const currencies = ref([
   { currency: new CurrencySet("LQF", ["", ""]), selected: false },
 ]);
 
-// 提交和取消方法
+
 function submit() {
-  // 提交已选中的货币数据
   const selectedCurrencies = currencies.value
       .filter((item) => item.selected)
       .map((item) => item.currency);

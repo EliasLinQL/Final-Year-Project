@@ -3,18 +3,20 @@
     <div class="container">
       <!------------------->
       <!--Model-Info-Part-->
+      <!------------------->
       <transition name="backtest-infofade">
         <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
       </transition>
 
       <!-------------------->
       <!--Model-Train-Part-->
+      <!-------------------->
       <transition name="train">
-        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :trainset="ModelSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
+        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :newtrainset="NewTrainSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
       </transition>
 
       <transition name="callpreinfo">
-        <pre-supposed-info class="preinfo" v-if="isModelSetDetailVisible"/>
+        <pre-supposed-info class="preinfo" v-if="isModelSetDetailVisible" :trainset="TrainSet"/>
       </transition>
 
       <transition name="createnewmodel">
@@ -31,6 +33,7 @@
 
       <!-------------->
       <!--Graph-Part-->
+      <!-------------->
       <transition name="showGraph-relation">
         <relation class="relation" v-if="waitisGraphVisible" :class="{ swapped: isDiagramVisible }" :state-switch-r="isDiagramVisible"/>
       </transition>
@@ -53,6 +56,7 @@
 
       <!----------------->
       <!--BackTest-Part-->
+      <!----------------->
       <transition name="backtest-infoin">
         <back-test-info v-if="isBackTestVisible" class="back-test-info" @triggerEndTest="endTest"/>
       </transition>
@@ -94,8 +98,12 @@ const isCurrencyListVisible = ref(false);
 
 //通讯数据
 const Currencies = ref([]);
-const ModelSet = ref([]);
+const NewTrainSet = ref([]);
+const TrainSet = ref(null);
 
+ // -----------------------
+ // ModelInfo Function Part
+ // -----------------------
 
 function goTrain() {
   if (isDiagramVisible.value) {
@@ -111,6 +119,20 @@ function goTrain() {
     btcVisible.value = false;
   }
 }
+
+function showGraph() {
+  isGraphVisible.value = true;
+  isTrainVisible.value = false;
+  hasBeenTrain.value = false;
+  hasBeenCreate.value = false;
+  btcVisible.value = true;
+  isModelSetDetailVisible.value = false;
+  isCurrencyListVisible.value = false;
+}
+
+// ------------------------
+// ModelTrain Function Part
+// ------------------------
 
 function endTrain() {
   isTrainVisible.value = false;
@@ -131,13 +153,34 @@ function goCreateModel(){
   hasBeenTrain.value = false;
 }
 
-function callDetails(){
+function callDetails(selectedTrainSet){
+  TrainSet.value = selectedTrainSet.value;
   isModelSetDetailVisible.value = !isModelSetDetailVisible.value;
 }
+
+// -------------------------
+// NewModelSet Function Part
+// -------------------------
 
 function callCurrencyList(){
   isCurrencyListVisible.value = !isCurrencyListVisible.value;
 }
+
+//将数据发送到modelTrain组件
+function createModel(newModelSet){
+  NewTrainSet.value = newModelSet;
+  hasBeenCreate.value = false;
+  isCurrencyListVisible.value = false;
+}
+
+function cancelCreate(){
+  hasBeenCreate.value = false;
+  isCurrencyListVisible.value = false;
+}
+
+// --------------------------
+// CurrencyList Function Part
+// --------------------------
 
 //提交选中货币数据到newModelSet
 function currencySubmit(selectedCurrencies){
@@ -149,31 +192,17 @@ function currencyCancel(){
   isCurrencyListVisible.value = false;
 }
 
-//将数据发送到modelTrain组件
-function createModel(newModelSet){
-  ModelSet.value = newModelSet;
-  hasBeenCreate.value = false;
-  isCurrencyListVisible.value = false;
-}
-
-function cancelCreate(){
-  hasBeenCreate.value = false;
-  isCurrencyListVisible.value = false;
-}
-
-function showGraph() {
-  isGraphVisible.value = true;
-  isTrainVisible.value = false;
-  hasBeenTrain.value = false;
-  hasBeenCreate.value = false;
-  btcVisible.value = true;
-  isModelSetDetailVisible.value = false;
-  isCurrencyListVisible.value = false;
-}
+// ------------------------
+// R To D Btn Function Part
+// ------------------------
 
 function rToD(){
   isDiagramVisible.value = !isDiagramVisible.value;
 }
+
+// -----------------------------
+// BackTestControl Function Part
+// -----------------------------
 
 function goBackTest() {
   if (isDiagramVisible.value){
@@ -187,6 +216,10 @@ function goBackTest() {
     isGraphVisible.value = false;
   }
 }
+
+// --------------------------
+// BackTestInfo Function Part
+// --------------------------
 
 function endTest(){
   isBackTestVisible.value = false;
@@ -208,8 +241,10 @@ watch(isGraphVisible, (newVal) => {
     position: relative;
   }
 
-  /*******************/
-  /* modelInfo组件相关 */
+  /******************/
+  /* modelInfo Part */
+  /******************/
+
   .info{
     transition: all 1.8s ease;
     transform: translate(-200px,0);
@@ -240,8 +275,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /********************/
-  /* modelTrain组件相关 */
+  /*******************/
+  /* modelTrain Part */
+  /*******************/
+
   .train {
     position: absolute;
     top: 10%;
@@ -273,8 +310,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /*************************/
-  /* preSupposedInfo组件相关 */
+  /************************/
+  /* preSupposedInfo Part */
+  /************************/
+
   .preinfo{
     position: absolute;
     top: 0%;
@@ -296,8 +335,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /*********************/
-  /* newModelSet组件相关 */
+  /********************/
+  /* newModelSet Part */
+  /********************/
+
   .newmodelset{
     position: absolute;
     top: 46%;
@@ -320,7 +361,9 @@ watch(isGraphVisible, (newVal) => {
   }
 
   /*********************/
-  /* currencyList组件相关 */
+  /* currencyList Part */
+  /*********************/
+
   .currency-list{
     position: absolute;
     top: 46%;
@@ -336,8 +379,9 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /*******************/
-  /* trainLoss组件相关 */
+  /******************/
+  /* trainLoss Part */
+  /******************/
   .loss{
     position: absolute;
     top: 48%;
@@ -358,8 +402,10 @@ watch(isGraphVisible, (newVal) => {
   }
 
 
-  /*************************/
-  /* backTestControl组件相关 */
+  /************************/
+  /* backTestControl Part */
+  /************************/
+
   .btc{
     position: absolute;
     top: 50%;
@@ -378,8 +424,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /******************/
-  /* relation组件相关 */
+  /*****************/
+  /* relation Part */
+  /*****************/
+
   .relation{
     position: absolute;
     top: 0.8%;
@@ -404,8 +452,10 @@ watch(isGraphVisible, (newVal) => {
   }
 
 
-  /*****************/
-  /* diagram组件相关 */
+  /****************/
+  /* diagram Part */
+  /****************/
+
   .diagram{
     position: absolute;
     top: 69.5%;
@@ -430,8 +480,10 @@ watch(isGraphVisible, (newVal) => {
   }
 
 
-  /*****************/
-  /* rToDBtn组件相关 */
+  /****************/
+  /* rToDBtn Part */
+  /****************/
+
   .r-to-d-btn{
     position: absolute;
     top: 71%;
@@ -459,8 +511,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /************************/
-  /* back-test-info组件相关 */
+  /***********************/
+  /* back-test-info Part */
+  /***********************/
+
   .back-test-info{
     position: absolute;
     top: 0.8%;
@@ -480,8 +534,10 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /*************************/
-  /* tradingviewpart组件相关 */
+  /************************/
+  /* tradingviewpart Part */
+  /************************/
+
   .tradingviewpart{
     position: absolute;
     top: 0%;
