@@ -68,8 +68,6 @@ const currencies = ref([
   { currency: new CurrencySet("SOL", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
   { currency: new CurrencySet("XRP", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
   { currency: new CurrencySet("BNB", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
-  { currency: new CurrencySet("PEPE", ["", ""], "/currency_icon/pepe-pepe-logo.png"), selected: false },
-  { currency: new CurrencySet("RAY", ["", ""], "/currency_icon/raydium-ray-logo.png"), selected: false },
   { currency: new CurrencySet("AVAX", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
   { currency: new CurrencySet("ADA", ["", ""], "/currency_icon/cardano-ada-logo.png"), selected: false },
   { currency: new CurrencySet("LINK", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
