@@ -2,42 +2,50 @@
   <div class="box-column">
     <div class="box-0">
       <p class="p1">Currency List</p>
-      <button class="currency-submit" @click="submit">Create</button>
-      <button class="currency-cancel" @click="cancel">Cancel</button>
-    </div>
-    <div class="box-1">
-      <div
-          class="box-currency"
-          v-for="(currencyObj, index) in currencies"
-          :key="index"
-      >
-        <!-- 使用 selected 属性绑定复选框 -->
-        <input
-            type="checkbox"
-            class="check"
-            v-model="currencyObj.selected"
+      <div class="alltimeset">
+        <DatePicker
+            v-model="allDates"
+            format="yyyy-MM-dd HH:mm:ss"
+            range
+            :teleport="true"
+            style="width: 380px; height: 24px; font-size: 12px;"
         />
-
-        <div class="icon">
-          <img :src="currencyObj.currency.getIcon()" class="currency-icon" />
-        </div>
-
-        <div class="name">
-          <p class="p2">{{ currencyObj.currency.getName() }}</p>
-        </div>
-
-        <!-- 日期范围绑定 -->
-        <div class="timeset">
-          <DatePicker
-              v-model="currencyObj.currency.dates"
-              format="yyyy-MM-dd HH:mm:ss"
-              range
-              :teleport="true"
-              style="width: 400px; height: 24px; font-size: 12px;"
+      </div>
+      <button class="currency-submit" @click="submit">+</button>
+      <button class="currency-cancel" @click="cancel">X</button>
+    </div>
+      <div class="box-1">
+        <div
+            class="box-currency"
+            v-for="(currencyObj, index) in currencies"
+            :key="index"
+        >
+          <input
+              type="checkbox"
+              class="check"
+              v-model="currencyObj.selected"
           />
+
+          <div class="icon">
+            <img :src="currencyObj.currency.getIcon()" class="currency-icon" />
+          </div>
+
+          <div class="name">
+            <p class="p2">{{ currencyObj.currency.getName() }}</p>
+          </div>
+
+          <!-- 日期范围绑定 -->
+          <div class="timeset">
+            <DatePicker
+                v-model="currencyObj.currency.dates"
+                format="yyyy-MM-dd HH:mm:ss"
+                range
+                :teleport="true"
+                style="width: 416px; height: 24px; font-size: 12px;"
+            />
+          </div>
         </div>
       </div>
-    </div>
   </div>
 </template>
 
@@ -50,6 +58,7 @@ import CurrencySet from "@/bean/currencySet.js";
 // 定义emit事件
 const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
+const allDates = ref(["",""]);
 // 初始化货币数据
 const currencies = ref([
   { currency: new CurrencySet("DOGE", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
@@ -68,7 +77,13 @@ const currencies = ref([
 function submit() {
   const selectedCurrencies = currencies.value
       .filter((item) => item.selected)
-      .map((item) => item.currency);
+      .map((item) => {
+        if (!item.currency.dates[0] || !item.currency.dates[1]) {
+          item.currency.dates = [...allDates.value];
+        }
+        return item.currency;
+      });
+
   emit("triggerSubmit", selectedCurrencies);
 }
 
@@ -80,7 +95,7 @@ function cancel() {
 <style scoped>
 .box-column {
   background-color: #757575;
-  width: 500px;
+  width: 610px;
   height: 480px;
   margin: 10px;
   border-radius: 18px;
@@ -94,18 +109,19 @@ function cancel() {
   align-items: center;
 }
 
+
 .box-1 {
   background-color: #a6aaa6;
   border-radius: 12px;
   margin: 4px 0 8px 16px;
-  width: 460px;
+  width: 480px;
   height: 372px;
   overflow: auto;
   position: relative;
 }
 
 .box-1::-webkit-scrollbar {
-  width: 16px;
+  width: 20px;
 }
 
 .box-1::-webkit-scrollbar-track {
@@ -120,7 +136,7 @@ function cancel() {
 
 .box-currency {
   margin: 6px 6px;
-  width: 420px;
+  width: 436px;
   height: 98px;
   position: relative;
   border-radius: 10px;
@@ -131,14 +147,15 @@ function cancel() {
   background-color: #3A708D;
   border: 2px solid #346884;
   box-shadow: 1px 2px 4px #346884;
-  width: 120px;
-  height: 40px;
-  font-size: 20px;
+  width: 64px;
+  height: 64px;
+  font-size: 48px;
   color: #E0E0E0;
-  margin-left: 30px;
-  margin-top: 8px;
   border-radius: 16px;
   transition: all 0.2s ease;
+  position: absolute;
+  left: 86%;
+  top: 64%;
 }
 
 .currency-submit:hover {
@@ -154,14 +171,15 @@ function cancel() {
   background-color: #3A708D;
   border: 2px solid #346884;
   box-shadow: 1px 2px 4px #346884;
-  width: 120px;
-  height: 40px;
-  font-size: 20px;
+  width: 64px;
+  height: 64px;
+  font-size: 34px;
   color: #E0E0E0;
-  margin-left: 30px;
-  margin-top: 8px;
   border-radius: 16px;
   transition: all 0.2s ease;
+  position: absolute;
+  left: 86%;
+  top: 82%;
 }
 
 .currency-cancel:hover {
@@ -236,5 +254,10 @@ p {
   border-radius: 8px;
   width: 100%;
   height: 30px;
+}
+.alltimeset{
+  position: absolute;
+  left: 33%;
+  top: 5.5%;
 }
 </style>

@@ -34,8 +34,9 @@
 </template>
 
 <script setup>
-import {ref, watch, onMounted} from "vue";
+import {ref, watch, onMounted, onBeforeUnmount} from "vue";
 import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
+import ModelSet from "@/bean/modelSet.js";
 
 const isIconRotated = ref(false);
 const trainSettings = ref([]);
@@ -44,8 +45,9 @@ const selectedTrainSet = ref(null);
 const emit = defineEmits([
   "triggerEndTrain",
   "triggerStartTrain",
-  "triggerDetails",
+  "triggerDetail",
   "triggerGoCreate",
+  "triggerUpdatePre"
 ]);
 const props = defineProps({
   newtrainset: {type: Object},
@@ -61,7 +63,7 @@ function startTrain() {
 
 function callDetail() {
   isIconRotated.value = !isIconRotated.value;
-  emit("triggerDetail", selectedTrainSet);
+  emit("triggerDetail");
 }
 
 function createModel() {
@@ -70,7 +72,11 @@ function createModel() {
 
 function setTrainSet(selectedItem) {
   selectedTrainSet.value = selectedItem;
-  updateLocalStorage();
+}
+
+// 更新 LocalStorage 的函数
+function updateLocalStorage() {
+  localStorage.setItem("trainSettings", JSON.stringify(trainSettings.value));
 }
 
 // 从 LocalStorage 初始化 trainSettings
@@ -81,6 +87,12 @@ onMounted(() => {
   }
 });
 
+// 添加新数据到 trainSettings，并存储
+watch(props, (newval) => {
+  if (newval.newtrainset) {
+    trainSettings.value.push(newval.newtrainset);
+  }
+});
 // 当 trainSettings 改变时自动存储到 LocalStorage
 watch(
     trainSettings,
@@ -89,18 +101,18 @@ watch(
     },
     {deep: true}
 );
+//实时更新pre预览数据
+watch(
+    selectedTrainSet,
+    (newval) => {
+      emit("triggerUpdatePre",newval);
+    }
+);
 
-// 添加新数据到 trainSettings，并存储
-watch(props, (newval) => {
-  if (newval.newtrainset) {
-    trainSettings.value.push(newval.newtrainset);
-  }
-});
-
-// 更新 LocalStorage 的函数
-function updateLocalStorage() {
-  localStorage.setItem("trainSettings", JSON.stringify(trainSettings.value));
-}
+onBeforeUnmount(() => {
+  selectedTrainSet.value = new ModelSet("", []);
+  emit("triggerUpdatePre", selectedTrainSet);
+})
 </script>
 
 <style scoped>

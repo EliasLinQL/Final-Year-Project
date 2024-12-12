@@ -12,7 +12,7 @@
       <!--Model-Train-Part-->
       <!-------------------->
       <transition name="train">
-        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :newtrainset="NewTrainSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails"/>
+        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :newtrainset="NewTrainSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails" @trigger-update-pre="updatePre"/>
       </transition>
 
       <transition name="callpreinfo">
@@ -153,9 +153,12 @@ function goCreateModel(){
   hasBeenTrain.value = false;
 }
 
-function callDetails(selectedTrainSet){
-  TrainSet.value = selectedTrainSet.value;
+function callDetails(){
   isModelSetDetailVisible.value = !isModelSetDetailVisible.value;
+}
+
+function updatePre(selectedTrainSet){
+  TrainSet.value = selectedTrainSet;
 }
 
 // -------------------------
@@ -367,7 +370,7 @@ watch(isGraphVisible, (newVal) => {
   .currency-list{
     position: absolute;
     top: 46%;
-    left: 19%;
+    left: 14%;
   }
 
   .setcurrency-enter-active,.setcurrency-leave-active {

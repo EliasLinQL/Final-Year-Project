@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch} from 'vue';
 
 const emit = defineEmits(["triggerTrainSetCheck"])
 const props = defineProps({
@@ -55,6 +55,7 @@ watch(() => props.trainsettings, (newval) => {
     }));
   }
 }, {deep: true,immediate: true});
+
 </script>
 
 <style scoped>

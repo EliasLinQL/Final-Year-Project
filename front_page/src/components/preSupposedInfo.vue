@@ -7,7 +7,7 @@
     <div class="box-list">
       <div class="box-currency" v-for="(currencyObj, index) in selectedTrainSet.currencies" :key="index">
         <div class="icon">
-          <img :src="currencyObj.getIcon()" class="currency-icon" />
+          <img :src="currencyObj.getIcon()" class="currency-icon" alt="Currency Icon" />
         </div>
         <div class="name">
           <p class="p2">{{ currencyObj.getName() }}</p>
@@ -22,11 +22,16 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch} from "vue";
 import ModelSet from "@/bean/modelSet.js";
 import CurrencySet from "@/bean/currencySet.js";
+
+const props = defineProps({
+  trainset: { type: Object },
+});
+
+const selectedTrainSet = ref(new ModelSet("", []));
 
 // 日期格式化函数
 function formatDate(date) {
@@ -42,12 +47,6 @@ function formatDate(date) {
     second: "2-digit",
   }).replace(",", "");
 }
-
-const selectedTrainSet = ref(new ModelSet("", []));
-
-const props = defineProps({
-  trainset: { type: Object },
-});
 
 watch(
     () => props.trainset,
@@ -66,9 +65,8 @@ watch(
         );
       }
     },
-    { immediate: true }
+    {immediate: true}
 );
-
 </script>
 
 <style scoped>
@@ -81,6 +79,7 @@ watch(
   display: flex;
   flex-direction: column;
 }
+
 .box-row {
   display: flex;
   flex-direction: row;
@@ -88,6 +87,7 @@ watch(
   margin-left: 10px;
   margin-top: 5px;
 }
+
 .box-list {
   background-color: #a6aaa6;
   border-radius: 12px;
@@ -97,6 +97,7 @@ watch(
   overflow: auto;
   position: relative;
 }
+
 .box-list::-webkit-scrollbar {
   width: 12px;
 }
@@ -122,6 +123,7 @@ watch(
   border-radius: 10px;
   background-color: #595555;
 }
+
 .icon {
   position: absolute;
   background-color: #504d4d;
@@ -132,6 +134,7 @@ watch(
   margin-top: 8px;
   margin-bottom: 4px;
 }
+
 .currency-icon {
   width: 100%;
   height: 100%;
@@ -146,6 +149,7 @@ watch(
   width: 50px;
   height: 30px;
 }
+
 .timeset {
   position: absolute;
   top: 32%;
@@ -154,27 +158,32 @@ watch(
   width: 100%;
   height: 30px;
 }
+
 .p1 {
   font-size: 26px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
-.pname{
+
+.pname {
   font-size: 20px;
   margin-bottom: 8px;
   margin-left: 24px;
   margin-top: 2px;
 }
+
 .p2 {
   font-size: 18px;
   margin-top: 20px;
 }
+
 .p3 {
   font-size: 18px;
   margin-top: 10px;
   margin-bottom: 0;
   margin-left: 56px;
 }
+
 p {
   margin: 15px;
   font-family: Microsoft YaHei;
