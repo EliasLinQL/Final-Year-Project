@@ -70,6 +70,15 @@ const currencies = ref([
   { currency: new CurrencySet("BNB", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
   { currency: new CurrencySet("PEPE", ["", ""], "/currency_icon/pepe-pepe-logo.png"), selected: false },
   { currency: new CurrencySet("RAY", ["", ""], "/currency_icon/raydium-ray-logo.png"), selected: false },
+  { currency: new CurrencySet("AVAX", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
+  { currency: new CurrencySet("ADA", ["", ""], "/currency_icon/cardano-ada-logo.png"), selected: false },
+  { currency: new CurrencySet("LINK", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
+  { currency: new CurrencySet("DOT", ["", ""], "/currency_icon/polkadot-new-dot-logo.png"), selected: false },
+  { currency: new CurrencySet("SHIB", ["", ""], "/currency_icon/shiba-inu-shib-logo.png"), selected: false },
+  { currency: new CurrencySet("SUI", ["", ""], "/currency_icon/sui-sui-logo.png"), selected: false },
+  { currency: new CurrencySet("TON", ["", ""], "/currency_icon/toncoin-ton-logo.png"), selected: false },
+  { currency: new CurrencySet("TRX", ["", ""], "/currency_icon/tron-trx-logo.png"), selected: false },
+  { currency: new CurrencySet("WBTC", ["", ""], "/currency_icon/wrapped-bitcoin.png"), selected: false },
 ]);
 
 
