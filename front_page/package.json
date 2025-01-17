@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vuepic/vue-datepicker": "^10.0.0",
+    "lightweight-charts": "^4.2.2",
     "vue": "^3.5.13"
   },
   "devDependencies": {
