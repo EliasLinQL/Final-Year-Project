@@ -6,8 +6,11 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 # File paths
-project_root = r"D:\Y3\FYP\Final-Year-Project"
+project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
 data_dir = os.path.join(project_root, "data")  # Path to the data folder
+
+file_list = [file for file in os.listdir(data_dir) if file.endswith('.csv')]
+print("CSV 文件列表:", file_list)
 
 # Load daily closing price data
 file_list = [file for file in os.listdir(data_dir) if file.endswith('.csv')]
@@ -17,8 +20,8 @@ crypto_prices = {}
 for file in file_list:
     symbol = file.split('_')[0]  # Extract the trading pair name
     df = pd.read_csv(os.path.join(data_dir, file))
-    df['date'] = pd.to_datetime(df['open_time'])  # Convert date format
-    df.set_index('date', inplace=True)  # Set date as index
+    df['datetime'] = pd.to_datetime(df['open_time'])  # Convert date format
+    df.set_index('datetime', inplace=True)  # Set date as index
     crypto_prices[symbol] = df['close']
 
 # Create a DataFrame with closing prices for all cryptocurrencies
@@ -28,7 +31,7 @@ prices_df = pd.DataFrame(crypto_prices)
 returns_df = prices_df.pct_change().dropna()
 
 # ----------------- Feature Engineering -----------------
-def generate_temporal_features(prices_df, returns_df, lookback_days=5, ma_windows=[5, 10]):
+def generate_temporal_features(prices_df, returns_df, lookback_days=6, ma_windows=[6, 18]):
     """
     Generate temporal features for each cryptocurrency, including:
     - Returns over the last x days
@@ -68,8 +71,8 @@ def generate_temporal_features(prices_df, returns_df, lookback_days=5, ma_window
     return features_df
 
 # Define parameters for feature engineering
-lookback_days = 5  # Returns over the last 5 days
-ma_windows = [9, 25]  # Moving averages for 9 and 25 days
+lookback_days = 6  # Returns over the last 1 day
+ma_windows = [18, 54]  # Moving averages for 3 and 9 days
 
 # Generate temporal features
 features_df = generate_temporal_features(prices_df, returns_df, lookback_days, ma_windows)

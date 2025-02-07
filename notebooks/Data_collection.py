@@ -8,7 +8,7 @@ BASE_URL = 'https://api.binance.com'
 
 # Time settings: From January 1, 2021, to November 1, 2024 (timestamps in milliseconds)
 start_time = int(time.mktime(time.strptime('2021-01-01', '%Y-%m-%d')) * 1000)
-end_time = int(time.mktime(time.strptime('2024-11-01', '%Y-%m-%d')) * 1000)
+end_time = int(time.mktime(time.strptime('2025-01-01', '%Y-%m-%d')) * 1000)
 
 # Maximum number of records per request
 limit = 1000
@@ -39,7 +39,7 @@ for symbol in symbols:
     while current_start_time < end_time:
         url = (
                 BASE_URL +
-                f'/api/v3/klines?symbol={symbol}&interval=1d&limit={limit}&startTime={current_start_time}&endTime={end_time}'
+                f'/api/v3/klines?symbol={symbol}&interval=4h&limit={limit}&startTime={current_start_time}&endTime={end_time}'
         )
         print(f"Fetching data for {symbol} from: {url}")
         response = requests.get(url)
