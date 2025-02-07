@@ -58,6 +58,50 @@ function endTrain() {
 }
 
 function startTrain() {
+  if (!selectedTrainSet.value) {
+    alert("Please select a model preset before starting training!");
+    return;
+  }
+
+  console.log(selectedTrainSet);
+
+  //获取处理模型预设数据
+  const start_date = selectedTrainSet.value.currencies[0].dates[0];
+  const end_date = selectedTrainSet.value.currencies[0].dates[1];
+  const symbols = selectedTrainSet.value.currencies.map(currencies => currencies.name);
+
+  const requestData = {
+    start_date,
+    end_date,
+    symbols
+  }
+
+  console.log(requestData);
+
+  // 发送选中的模型预设到 Python 后端
+  fetch("http://localhost:5000/api/fetch_crypto_data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(requestData),
+    mode: "cors" // 确保跨域请求模式
+  })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP Error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("✅ Success:", data);
+        alert("Training started successfully!");
+      })
+      .catch(error => {
+        console.error("🔥 Frontend Error:", error);
+        alert("Failed to start training. Check the console.");
+      });
+
   emit("triggerStartTrain");
 }
 

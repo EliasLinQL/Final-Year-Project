@@ -5,7 +5,7 @@
       <div class="alltimeset">
         <DatePicker
             v-model="allDates"
-            format="yyyy-MM-dd HH:mm:ss"
+            format="yyyy-MM-dd"
             range
             :teleport="true"
             style="width: 380px; height: 24px; font-size: 12px;"
@@ -34,16 +34,6 @@
             <p class="p2">{{ currencyObj.currency.getName() }}</p>
           </div>
 
-          <!-- 日期范围绑定 -->
-          <div class="timeset">
-            <DatePicker
-                v-model="currencyObj.currency.dates"
-                format="yyyy-MM-dd HH:mm:ss"
-                range
-                :teleport="true"
-                style="width: 416px; height: 24px; font-size: 12px;"
-            />
-          </div>
         </div>
       </div>
   </div>
@@ -61,22 +51,22 @@ const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 const allDates = ref(["",""]);
 // 初始化货币数据
 const currencies = ref([
-  { currency: new CurrencySet("DOGE", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
-  { currency: new CurrencySet("BTC", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
-  { currency: new CurrencySet("ETH", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
+  { currency: new CurrencySet("DOGEUSDT", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
+  { currency: new CurrencySet("BTCUSDT", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
+  { currency: new CurrencySet("ETHUSDT", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
   { currency: new CurrencySet("USDT", ["", ""], "/currency_icon/tether-usdt-logo.png"), selected: false },
-  { currency: new CurrencySet("SOL", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
-  { currency: new CurrencySet("XRP", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
-  { currency: new CurrencySet("BNB", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
-  { currency: new CurrencySet("AVAX", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
-  { currency: new CurrencySet("ADA", ["", ""], "/currency_icon/cardano-ada-logo.png"), selected: false },
-  { currency: new CurrencySet("LINK", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
-  { currency: new CurrencySet("DOT", ["", ""], "/currency_icon/polkadot-new-dot-logo.png"), selected: false },
-  { currency: new CurrencySet("SHIB", ["", ""], "/currency_icon/shiba-inu-shib-logo.png"), selected: false },
-  { currency: new CurrencySet("SUI", ["", ""], "/currency_icon/sui-sui-logo.png"), selected: false },
-  { currency: new CurrencySet("TON", ["", ""], "/currency_icon/toncoin-ton-logo.png"), selected: false },
-  { currency: new CurrencySet("TRX", ["", ""], "/currency_icon/tron-trx-logo.png"), selected: false },
-  { currency: new CurrencySet("WBTC", ["", ""], "/currency_icon/wrapped-bitcoin.png"), selected: false },
+  { currency: new CurrencySet("SOLUSDT", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
+  { currency: new CurrencySet("XRPUSDT", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
+  { currency: new CurrencySet("BNBUSDT", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
+  { currency: new CurrencySet("AVAXUSDT", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
+  { currency: new CurrencySet("ADAUSDT", ["", ""], "/currency_icon/cardano-ada-logo.png"), selected: false },
+  { currency: new CurrencySet("LINKUSDT", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
+  { currency: new CurrencySet("DOTUSDT", ["", ""], "/currency_icon/polkadot-new-dot-logo.png"), selected: false },
+  { currency: new CurrencySet("SHIBUSDT", ["", ""], "/currency_icon/shiba-inu-shib-logo.png"), selected: false },
+  { currency: new CurrencySet("SUIUSDT", ["", ""], "/currency_icon/sui-sui-logo.png"), selected: false },
+  { currency: new CurrencySet("TONUSDT", ["", ""], "/currency_icon/toncoin-ton-logo.png"), selected: false },
+  { currency: new CurrencySet("TRXUSDT", ["", ""], "/currency_icon/tron-trx-logo.png"), selected: false },
+  { currency: new CurrencySet("WBTCUSDT", ["", ""], "/currency_icon/wrapped-bitcoin.png"), selected: false },
 ]);
 
 
@@ -85,14 +75,20 @@ function submit() {
   const selectedCurrencies = currencies.value
       .filter((item) => item.selected)
       .map((item) => {
-        if (!item.currency.dates[0] || !item.currency.dates[1]) {
-          item.currency.dates = [...allDates.value];
-        }
+
+        item.currency.dates = [...allDates.value];
+
+        // 格式化日期为 yyyy-MM-dd
+        item.currency.dates = item.currency.dates.map(date =>
+            date instanceof Date ? date.toISOString().split("T")[0] : date
+        );
+
         return item.currency;
       });
 
   emit("triggerSubmit", selectedCurrencies);
 }
+
 
 function cancel() {
   emit("triggerCancel");
@@ -144,7 +140,7 @@ function cancel() {
 .box-currency {
   margin: 6px 6px;
   width: 436px;
-  height: 98px;
+  height: 64px;
   position: relative;
   border-radius: 10px;
   background-color: #595555;
