@@ -4,6 +4,7 @@ import os
 import time
 import pandas as pd
 import requests
+import subprocess  # 用于执行 Data_processing.py
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # 允许跨域请求
@@ -15,16 +16,15 @@ BASE_URL = 'https://api.binance.com'
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(project_root, 'data')
 
-
 # 确保 data 目录存在
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
 
+
 @app.route('/api/fetch_crypto_data', methods=['POST'])
 def fetch_crypto_data():
     """
-    接收前端发送的 JSON 请求，解析 start_date、end_date、symbols，
-    然后获取对应的 Binance 数据并存储为 CSV 文件。
+    接收前端请求，获取加密货币数据，并在成功后调用 Data_processing.py 处理数据。
     """
     try:
         # 获取前端传来的 JSON 数据
@@ -45,14 +45,20 @@ def fetch_crypto_data():
         # 采集数据并存储 CSV
         file_paths = fetch_and_save_crypto_data(symbols, start_time, end_time)
 
+        # **成功采集数据后，调用 Data_processing.py**
+        if file_paths:
+            print("🚀 Fetching complete! Now executing Data_processing.py...")
+            execute_data_processing()
+
         return jsonify({
-            "message": "Data successfully fetched and saved",
+            "message": "Data successfully fetched, saved, and processed",
             "status": "success"
         }), 200
 
     except Exception as e:
         print("🔥 ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
+
 
 def fetch_and_save_crypto_data(symbols, start_time, end_time):
     """
@@ -105,6 +111,30 @@ def fetch_and_save_crypto_data(symbols, start_time, end_time):
             print(f"✅ Data for {symbol} successfully saved to {output_file}")
 
     return file_paths  # 返回所有生成的 CSV 文件路径
+
+
+def execute_data_processing():
+    """
+    运行同目录下的 Data_processing.py 脚本。
+    """
+    try:
+        script_path = os.path.join(os.path.dirname(__file__), 'Data_processing.py')
+
+        if os.path.exists(script_path):
+            print(f"⚙️ Executing {script_path} ...")
+            result = subprocess.run(["python", script_path], capture_output=True, text=True)
+
+            if result.returncode == 0:
+                print("✅ Data_processing.py executed successfully!")
+                print(result.stdout)  # 打印输出结果
+            else:
+                print("❌ Error executing Data_processing.py")
+                print(result.stderr)  # 打印错误信息
+        else:
+            print(f"❌ Error: {script_path} not found!")
+
+    except Exception as e:
+        print(f"🔥 Execution Error: {str(e)}")
 
 
 if __name__ == '__main__':
