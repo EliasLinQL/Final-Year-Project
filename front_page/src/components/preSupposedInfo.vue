@@ -4,6 +4,8 @@
       <p class="p1">Pre Supposed Info</p>
     </div>
     <p class="pname">PreName: {{ selectedTrainSet.name }}</p>
+    <p class="pname">Start: {{ selectedTrainSet.currencies[0].dates[0] }}</p>
+    <p class="pname">End: {{ selectedTrainSet.currencies[0].dates[0] }}</p>
     <div class="box-list">
       <div class="box-currency" v-for="(currencyObj, index) in selectedTrainSet.currencies" :key="index">
         <div class="icon">
@@ -11,11 +13,6 @@
         </div>
         <div class="name">
           <p class="p2">{{ currencyObj.getName() }}</p>
-        </div>
-        <!-- 日期范围显示 -->
-        <div class="timeset">
-          <p class="p3">{{ formatDate(currencyObj.getDates()[0]) }}</p>
-          <p class="p3">{{ formatDate(currencyObj.getDates()[1]) }}</p>
         </div>
       </div>
     </div>
@@ -90,7 +87,7 @@ watch(
   border-radius: 12px;
   margin: 4px 0 8px 6px;
   width: 330px;
-  height: 83.6%;
+  height: 78%;
   overflow: auto;
   position: relative;
 }
@@ -115,7 +112,7 @@ watch(
   margin-left: 4px;
   margin-right: 0;
   width: 296px;
-  height: 112px;
+  height: 96px;
   position: relative;
   border-radius: 10px;
   background-color: #595555;
@@ -124,10 +121,10 @@ watch(
 .icon {
   position: absolute;
   background-color: #504d4d;
-  height: 48px;
-  width: 48px;
+  height: 56px;
+  width: 56px;
   left: 9px;
-  border-radius: 24px;
+  border-radius: 28px;
   margin-top: 8px;
   margin-bottom: 4px;
 }
