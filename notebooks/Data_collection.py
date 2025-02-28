@@ -1,3 +1,5 @@
+import sys
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -115,30 +117,26 @@ def fetch_and_save_crypto_data(symbols, start_time, end_time):
 
 
 def execute_data_processing():
-    """
-    运行 Data_processing.py 脚本，并返回执行结果。
-    """
     try:
         script_path = os.path.join(os.path.dirname(__file__), 'Data_processing.py')
+        python_executable = sys.executable  # 获取当前 Flask 运行的 Python 解释器
 
         if os.path.exists(script_path):
+            print(f"⚙️ Using Python: {python_executable}")
             print(f"⚙️ Executing {script_path} ...")
-            result = subprocess.run(["python", script_path], capture_output=True, text=True)
+            result = subprocess.run([python_executable, script_path], capture_output=True, text=True)
 
             if result.returncode == 0:
                 print("✅ Data_processing.py executed successfully!")
-                print(result.stdout)  # 打印输出结果
                 return {"status": "success", "message": "Data processing completed successfully"}
             else:
                 print("❌ Error executing Data_processing.py")
-                print(result.stderr)  # 打印错误信息
+                print(result.stderr)
                 return {"status": "error", "message": result.stderr}
         else:
-            print(f"❌ Error: {script_path} not found!")
             return {"status": "error", "message": "Data_processing.py not found"}
 
     except Exception as e:
-        print(f"🔥 Execution Error: {str(e)}")
         return {"status": "error", "message": str(e)}
 
 

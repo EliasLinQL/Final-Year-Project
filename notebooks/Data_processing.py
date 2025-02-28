@@ -6,24 +6,32 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 # File paths
-project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
-# project_root = r"C:\Users\32561\Desktop\lqf"
+# project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
+project_root = r"C:\Users\32561\Desktop\lqf"
 data_dir = os.path.join(project_root, "data")  # Path to the data folder
-
-file_list = [file for file in os.listdir(data_dir) if file.endswith('.csv')]
-print("CSV 文件列表:", file_list)
 
 # Load daily closing price data
 file_list = [file for file in os.listdir(data_dir) if file.endswith('.csv')]
+print("CSV 文件列表:", file_list)
+print(os.path.join(data_dir, "data"))
 
 # Extract closing prices for all cryptocurrencies
 crypto_prices = {}
 for file in file_list:
     symbol = file.split('_')[0]  # Extract the trading pair name
-    df = pd.read_csv(os.path.join(data_dir, file))
-    df['datetime'] = pd.to_datetime(df['open_time'])  # Convert date format
-    df.set_index('datetime', inplace=True)  # Set date as index
-    crypto_prices[symbol] = df['close']
+    file_path = os.path.join(data_dir, file)
+
+    df = pd.read_csv(file_path)
+
+    # 统一列名格式
+    df.columns = df.columns.str.lower().str.replace(" ", "_").str.strip()
+
+    if 'open_time' in df.columns:
+        df['datetime'] = pd.to_datetime(df['open_time'])  # Convert date format
+        df.set_index('datetime', inplace=True)  # Set date as index
+        crypto_prices[symbol] = df['close']
+    else:
+        print(f"⚠️ 警告: 文件 `{file}` 没有 `open_time` 列，跳过处理！")
 
 # Create a DataFrame with closing prices for all cryptocurrencies
 prices_df = pd.DataFrame(crypto_prices)
