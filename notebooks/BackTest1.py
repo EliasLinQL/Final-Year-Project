@@ -36,7 +36,7 @@ actual_returns = btc_df['close'].pct_change().values[1:]  # Remove the first NaN
 y_pred = y_pred[:len(btc_prices) - 1]  # Ensure length matches btc_prices[:-1]
 
 # **New condition: Only go long when returns exceed transaction fees; remain neutral otherwise**
-FEE = 0.001  # Transaction fee (0.1%)
+FEE = 0.00  # Transaction fee (0.1%)
 btc_df = btc_df.iloc[:len(y_pred)]  # Adjust btc_df length
 btc_df['y_pred'] = y_pred  # Add predicted returns
 btc_df['position'] = np.where(
