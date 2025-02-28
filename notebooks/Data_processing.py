@@ -6,8 +6,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 # File paths
-# project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
-project_root = r"C:\Users\32561\Desktop\lqf"
+project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
+# project_root = r"C:\Users\32561\Desktop\lqf"
 data_dir = os.path.join(project_root, "data")  # Path to the data folder
 
 # Load daily closing price data
