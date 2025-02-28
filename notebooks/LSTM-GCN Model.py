@@ -56,23 +56,38 @@ class TimeSeriesDataset(Dataset):
         return self.X[idx], self.y[idx]
 
 # Prepare time series data
-def prepare_data(features_df, target_column, sequence_length=30):
-    data = features_df.drop(columns=[target_column]).values
-    target = features_df[target_column].values
+def prepare_data(features_df, sequence_length=30):
+    """
+    Prepare time-series data using return_lag_1 to return_lag_6 as input features.
+
+    Args:
+        features_df (DataFrame): The feature dataframe containing return_lag_1 to return_lag_6.
+        sequence_length (int): The length of the time-series window.
+
+    Returns:
+        X (numpy array): Time-series input features.
+        y (numpy array): Corresponding target values.
+    """
+    # Select return_lag_1 to return_lag_6 as input features
+    lag_columns = [f'BTCUSDT_return_lag_{i}' for i in range(1, 7)]
+    data = features_df[lag_columns].values  # Keep only lag features
+
+    # Use return_lag_6 as the target variable (same as before)
+    target = features_df['BTCUSDT_return_lag_1'].values
 
     X, y = [], []
     for i in range(sequence_length, len(data)):
-        X.append(data[i-sequence_length:i])
-        y.append(target[i])
+        X.append(data[i - sequence_length:i])  # Take past 30 timesteps of features
+        y.append(target[i])  # Predict return_lag_6
 
     return np.array(X), np.array(y)
 
-# Parameters
-sequence_length = 30
-target_column = 'BTCUSDT_return_lag_6'
+
+# Set parameters
+sequence_length = 30  # Keep the same sequence length
+X, y = prepare_data(features_df, sequence_length=sequence_length)
 
 # Split data into training and testing sets
-X, y = prepare_data(features_df, target_column, sequence_length)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Load data using DataLoader
@@ -81,16 +96,19 @@ test_dataset = TimeSeriesDataset(X_test, y_test)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
+
 # ----------------- Improved LSTM Model (BiLSTM) -----------------
 class LSTMModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_layers, output_dim, dropout=0.2):
+    def __init__(self, input_dim, hidden_dim, num_layers, output_dim, dropout=0.3):
         super(LSTMModel, self).__init__()
         self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True, dropout=dropout, bidirectional=True)
+        self.layer_norm = nn.LayerNorm(hidden_dim * 2)
         self.fc = nn.Linear(hidden_dim * 2, output_dim)  # Adjusted for BiLSTM output
 
     def forward(self, x):
         _, (hidden, _) = self.lstm(x)
         hidden = torch.cat((hidden[-2], hidden[-1]), dim=1)  # Concatenating forward and backward hidden states
+        hidden = self.layer_norm(hidden)
         output = self.fc(hidden)
         return output
 
@@ -123,6 +141,7 @@ class LSTMGCNModel(nn.Module):
         self.lstm = LSTMModel(lstm_input_dim, lstm_hidden_dim, lstm_num_layers, combined_output_dim, dropout)
         self.gcn = GCNModel(gcn_input_dim, gcn_hidden_dim, gcn_output_dim)
         self.gcn_fc = nn.Linear(gcn_output_dim, combined_output_dim)
+        self.layer_norm = nn.LayerNorm(2 * combined_output_dim)
         self.final_fc = nn.Linear(2 * combined_output_dim, 1)
         self.sigmoid = nn.Sigmoid()
 
@@ -132,6 +151,7 @@ class LSTMGCNModel(nn.Module):
         gcn_out = self.gcn_fc(gcn_out)
         gcn_out = torch.mean(gcn_out, dim=0, keepdim=True).repeat(lstm_out.size(0), 1)
         combined = torch.cat([lstm_out, gcn_out], dim=-1)
+        combined = self.layer_norm(combined)
         output = self.final_fc(combined)
         return self.sigmoid(output)
 
@@ -141,10 +161,10 @@ print(f"Using device: {device}")
 
 model = LSTMGCNModel(
     lstm_input_dim=X.shape[2],
-    lstm_hidden_dim=64,
-    lstm_num_layers=2,
+    lstm_hidden_dim=256,
+    lstm_num_layers=3,
     gcn_input_dim=features_df.shape[1] - 1,
-    gcn_hidden_dim=16,
+    gcn_hidden_dim=32,
     gcn_output_dim=8,
     combined_output_dim=16
 ).to(device)
@@ -152,17 +172,19 @@ print(model)
 
 # ----------------- Training Configuration -----------------
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 num_epochs = 50
 
-# Define Cyclical Learning Rate scheduler
-scheduler = OneCycleLR(
+# ReduceLROnPlateau
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer,
-    max_lr=0.005,  # Maximum learning rate
-    steps_per_epoch=len(train_loader),
-    epochs=num_epochs
+    mode='min',
+    factor=0.5,  # Reduce learning rate by 50% when loss stops improving
+    patience=5,  # If no improvement for 5 epochs, reduce learning rate
+    min_lr=1e-6,  # Set a minimum learning rate to prevent it from becoming too low
 )
+
 
 # ----------------- Model Training -----------------
 class EarlyStopping:
@@ -208,11 +230,14 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        scheduler.step()  # Update learning rate
         running_loss += loss.item()
 
     avg_loss = running_loss / len(train_loader)
-    print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}, LR: {scheduler.get_last_lr()}")
+
+    # Adjust learning rate based on validation loss
+    scheduler.step(avg_loss)
+
+    print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}, LR: {optimizer.param_groups[0]['lr']}")
 
     # Check Early Stopping
     if early_stopper.check_early_stop(avg_loss):
