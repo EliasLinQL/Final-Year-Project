@@ -63,29 +63,19 @@ function startTrain() {
     return;
   }
 
-  console.log(selectedTrainSet);
-
-  //获取处理模型预设数据
   const start_date = selectedTrainSet.value.currencies[0].dates[0];
   const end_date = selectedTrainSet.value.currencies[0].dates[1];
   const symbols = selectedTrainSet.value.currencies.map(currencies => currencies.name);
 
-  const requestData = {
-    start_date,
-    end_date,
-    symbols
-  }
+  const requestData = { start_date, end_date, symbols };
 
-  console.log(requestData);
-
-  // 发送选中的模型预设到 Python 后端
   fetch("http://localhost:5000/api/fetch_crypto_data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(requestData),
-    mode: "cors" // 确保跨域请求模式
+    mode: "cors"
   })
       .then(response => {
         if (!response.ok) {
@@ -95,7 +85,11 @@ function startTrain() {
       })
       .then(data => {
         console.log("✅ Success:", data);
-        alert("Training started successfully!");
+        if (data.processing_status === "success") {
+          alert("Training started successfully! Data processing completed.");
+        } else {
+          alert(`Training started, but data processing failed: ${data.processing_message}`);
+        }
       })
       .catch(error => {
         console.error("🔥 Frontend Error:", error);
@@ -104,6 +98,7 @@ function startTrain() {
 
   emit("triggerStartTrain");
 }
+
 
 function callDetail() {
   isIconRotated.value = !isIconRotated.value;

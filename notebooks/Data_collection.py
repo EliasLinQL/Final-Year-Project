@@ -27,37 +27,38 @@ def fetch_crypto_data():
     接收前端请求，获取加密货币数据，并在成功后调用 Data_processing.py 处理数据。
     """
     try:
-        # 获取前端传来的 JSON 数据
         request_data = request.json
         print("✅ Received Request Data:", request_data)
 
-        # 获取前端传递的日期和交易对
         start_date = request_data.get("start_date", "2021-01-01")
         end_date = request_data.get("end_date", "2025-01-01")
         symbols = request_data.get("symbols", ["BTCUSDT", "ETHUSDT"])
 
-        # 转换日期为时间戳（毫秒）
         start_time = int(time.mktime(time.strptime(start_date, '%Y-%m-%d')) * 1000)
         end_time = int(time.mktime(time.strptime(end_date, '%Y-%m-%d')) * 1000)
 
         print(f"📅 Fetching data from {start_date} to {end_date} for symbols: {symbols}")
 
-        # 采集数据并存储 CSV
+        # 采集数据
         file_paths = fetch_and_save_crypto_data(symbols, start_time, end_time)
 
-        # **成功采集数据后，调用 Data_processing.py**
+        # 调用数据处理
         if file_paths:
             print("🚀 Fetching complete! Now executing Data_processing.py...")
-            execute_data_processing()
+            processing_result = execute_data_processing()
+        else:
+            processing_result = {"status": "error", "message": "No data fetched"}
 
         return jsonify({
-            "message": "Data successfully fetched, saved, and processed",
-            "status": "success"
+            "message": "Data fetch request processed",
+            "processing_status": processing_result["status"],
+            "processing_message": processing_result["message"]
         }), 200
 
     except Exception as e:
         print("🔥 ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
+
 
 
 def fetch_and_save_crypto_data(symbols, start_time, end_time):
@@ -115,7 +116,7 @@ def fetch_and_save_crypto_data(symbols, start_time, end_time):
 
 def execute_data_processing():
     """
-    运行同目录下的 Data_processing.py 脚本。
+    运行 Data_processing.py 脚本，并返回执行结果。
     """
     try:
         script_path = os.path.join(os.path.dirname(__file__), 'Data_processing.py')
@@ -127,14 +128,19 @@ def execute_data_processing():
             if result.returncode == 0:
                 print("✅ Data_processing.py executed successfully!")
                 print(result.stdout)  # 打印输出结果
+                return {"status": "success", "message": "Data processing completed successfully"}
             else:
                 print("❌ Error executing Data_processing.py")
                 print(result.stderr)  # 打印错误信息
+                return {"status": "error", "message": result.stderr}
         else:
             print(f"❌ Error: {script_path} not found!")
+            return {"status": "error", "message": "Data_processing.py not found"}
 
     except Exception as e:
         print(f"🔥 Execution Error: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
 
 
 if __name__ == '__main__':
