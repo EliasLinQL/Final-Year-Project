@@ -5,7 +5,7 @@
     </div>
     <p class="pname">PreName: {{ selectedTrainSet.name }}</p>
     <p class="pname">Start: {{ selectedTrainSet.currencies[0].dates[0] }}</p>
-    <p class="pname">End: {{ selectedTrainSet.currencies[0].dates[0] }}</p>
+    <p class="pname">End: {{ selectedTrainSet.currencies[0].dates[1] }}</p>
     <div class="box-list">
       <div class="box-currency" v-for="(currencyObj, index) in selectedTrainSet.currencies" :key="index">
         <div class="icon">
@@ -112,7 +112,7 @@ watch(
   margin-left: 4px;
   margin-right: 0;
   width: 296px;
-  height: 96px;
+  height: 84px;
   position: relative;
   border-radius: 10px;
   background-color: #595555;
@@ -138,7 +138,7 @@ watch(
 
 .name {
   position: absolute;
-  top: -10px;
+  top: 5px;
   left: 64px;
   width: 50px;
   height: 30px;

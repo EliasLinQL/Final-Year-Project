@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import {onMounted, ref} from "vue";
 import DatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import CurrencySet from "@/bean/currencySet.js";
@@ -75,10 +75,8 @@ function submit() {
   const selectedCurrencies = currencies.value
       .filter((item) => item.selected)
       .map((item) => {
-
         item.currency.dates = [...allDates.value];
 
-        // 格式化日期为 yyyy-MM-dd
         item.currency.dates = item.currency.dates.map(date =>
             date instanceof Date ? date.toISOString().split("T")[0] : date
         );
@@ -86,13 +84,43 @@ function submit() {
         return item.currency;
       });
 
+  // 保存到 localStorage
+  localStorage.setItem("selectedCurrencies", JSON.stringify(selectedCurrencies));
+
   emit("triggerSubmit", selectedCurrencies);
 }
+
 
 
 function cancel() {
   emit("triggerCancel");
 }
+
+onMounted(() => {
+  const savedData = localStorage.getItem("selectedCurrencies");
+  if (savedData) {
+    const savedCurrencies = JSON.parse(savedData);
+
+    // 设置 allDates 的值（统一时间）
+    if (savedCurrencies.length > 0 && savedCurrencies[0].dates) {
+      const [start, end] = savedCurrencies[0].dates;
+      allDates.value = [
+        new Date(start),
+        new Date() // 设置结束时间为当前时间
+      ];
+    }
+
+    // 更新 currencies 中的 selected 状态
+    currencies.value.forEach((item) => {
+      const match = savedCurrencies.find(
+          (saved) => saved.name === item.currency.name
+      );
+      if (match) {
+        item.selected = true;
+      }
+    });
+  }
+});
 </script>
 
 <style scoped>

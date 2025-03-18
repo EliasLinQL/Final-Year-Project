@@ -47,7 +47,47 @@ function showCurrencyList() {
 function createModel() {
   const newModelSet = new ModelSet(modelSetName.value, props.currencies);
   emit("triggerCreateNewModel", newModelSet);
+
+  // 如果 currencies 为空则提示
+  if (!props.currencies || props.currencies.length === 0) {
+    alert("Please select currencies before creating model.");
+    return;
+  }
+
+  const start_date = props.currencies[0].dates[0];
+  const end_date = props.currencies[0].dates[1];
+  const symbols = props.currencies.map(item => item.name);
+
+  const requestData = { start_date, end_date, symbols };
+
+  fetch("http://localhost:5000/api/fetch_crypto_data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(requestData),
+    mode: "cors"
+  })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP Error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("✅ Success:", data);
+        if (data.processing_status === "success") {
+          alert("Data_Collection.py call successfully! Data processing completed.");
+        } else {
+          alert(`Data_Collection.py call successfully, but data processing failed: ${data.processing_message}`);
+        }
+      })
+      .catch(error => {
+        console.error("🔥 Frontend Error:", error);
+        alert("Failed to call Data_Collection.py, Check the console.");
+      });
 }
+
 
 function Cancel() {
   emit("triggerCancelCreate");

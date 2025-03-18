@@ -63,38 +63,24 @@ function startTrain() {
     return;
   }
 
-  const start_date = selectedTrainSet.value.currencies[0].dates[0];
-  const end_date = selectedTrainSet.value.currencies[0].dates[1];
-  const symbols = selectedTrainSet.value.currencies.map(currencies => currencies.name);
+  // const start_date = selectedTrainSet.value.currencies[0].dates[0];
+  // const end_date = selectedTrainSet.value.currencies[0].dates[1];
+  // const symbols = selectedTrainSet.value.currencies.map(currencies => currencies.name);
+  //
+  // const requestData = { start_date, end_date, symbols };
 
-  const requestData = { start_date, end_date, symbols };
-
-  fetch("http://localhost:5000/api/fetch_crypto_data", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(requestData),
-    mode: "cors"
+  fetch('http://localhost:5001/api/train_model', {
+    method: 'POST'
   })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        console.log("✅ Success:", data);
-        if (data.processing_status === "success") {
-          alert("Training started successfully! Data processing completed.");
-        } else {
-          alert(`Training started, but data processing failed: ${data.processing_message}`);
-        }
+        alert(data.message);
       })
-      .catch(error => {
-        console.error("🔥 Frontend Error:", error);
-        alert("Failed to start training. Check the console.");
+      .catch(err => {
+        console.error(err);
+        alert("Training failed");
       });
+
 
   emit("triggerStartTrain");
 }
