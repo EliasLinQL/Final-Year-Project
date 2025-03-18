@@ -124,7 +124,8 @@ def execute_data_processing():
         if os.path.exists(script_path):
             print(f"⚙️ Using Python: {python_executable}")
             print(f"⚙️ Executing {script_path} ...")
-            result = subprocess.run([python_executable, script_path], capture_output=True, text=True)
+            result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding="utf-8")
+
 
             if result.returncode == 0:
                 print("✅ Data_processing.py executed successfully!")
