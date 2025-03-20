@@ -5,7 +5,7 @@
       <!--Model-Info-Part-->
       <!------------------->
       <transition name="backtest-infofade">
-        <model-info class="info" v-if="!isBackTestVisible" :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible&&!isBackTestVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
+        <model-info class="info"  :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
       </transition>
 
       <!-------------------->
@@ -54,17 +54,6 @@
         <back-test-control class="btc" v-if="btcVisible" @triggerBackTest="goBackTest"/>
       </transition>
 
-      <!----------------->
-      <!--BackTest-Part-->
-      <!----------------->
-      <transition name="backtest-infoin">
-        <back-test-info v-if="isBackTestVisible" class="back-test-info" @triggerEndTest="endTest"/>
-      </transition>
-
-      <transition name="backtest-tradingview">
-        <trading-view-a-p-i-part v-if="isBackTestVisible" class="tradingviewpart"/>
-      </transition>
-
     </div>
 
 </template>
@@ -78,8 +67,6 @@ import BackTestControl from "@/components/backTestControl.vue";
 import Diagram from "@/components/diagram.vue";
 import RToDBtn from "@/components/rToDBtn.vue";
 import TrainLoss from "@/components/trainLoss.vue";
-import BackTestInfo from "@/components/backTestInfo.vue";
-import TradingViewAPIPart from "@/components/tradingViewAPIPart.vue";
 import NewModelSet from "@/components/newModelSet.vue";
 import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 import CurrencyList from "@/components/currencyList.vue";
@@ -208,17 +195,9 @@ function rToD(){
 // -----------------------------
 
 function goBackTest() {
-  if (isDiagramVisible.value){
-    isDiagramVisible.value = false;
-    setTimeout(()=>{
-      isBackTestVisible.value = true;
-      isGraphVisible.value = false;
-    },1100);
-  }else {
-    isBackTestVisible.value = true;
-    isGraphVisible.value = false;
-  }
+  isBackTestVisible.value = true;
 }
+
 
 // --------------------------
 // BackTestInfo Function Part
@@ -514,50 +493,5 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /***********************/
-  /* back-test-info Part */
-  /***********************/
-
-  .back-test-info{
-    position: absolute;
-    top: 0.8%;
-    left: 0.6%;
-  }
-
-  .backtest-infoin-enter-active,.backtest-infoin-leave-active {
-    transition: all 1.2s ease;
-  }
-
-  .backtest-infoin-enter-from {
-    transform: translateX(-1400px);
-    opacity: 1;
-  }
-  .backtest-infoin-leave-to {
-    transform: translateX(-1400px);
-    opacity: 1;
-  }
-
-  /************************/
-  /* tradingviewpart Part */
-  /************************/
-
-  .tradingviewpart{
-    position: absolute;
-    top: 0%;
-    left: 25%;
-  }
-
-  .backtest-tradingview-enter-active,.backtest-tradingview-leave-active {
-    transition: all 1.2s ease;
-  }
-
-  .backtest-tradingview-enter-from {
-    transform: translateY(1400px);
-    opacity: 1;
-  }
-  .backtest-tradingview-leave-to {
-    transform: translateY(1400px);
-    opacity: 1;
-  }
 
 </style>

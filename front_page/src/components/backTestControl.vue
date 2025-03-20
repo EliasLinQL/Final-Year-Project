@@ -7,18 +7,10 @@
     </div>
     <div class="box-row">
       <p class="p2">
-        Start
+        Currency:
       </p>
       <div class="data-area">
-
-      </div>
-    </div>
-    <div class="box-row">
-      <p class="p2">
-        End
-      </p>
-      <div class="data-area">
-
+        <train-checkmenu/>
       </div>
     </div>
     <div class="box-row box-btn">
@@ -28,6 +20,8 @@
 </template>
 
 <script setup>
+
+import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
 
 const emit = defineEmits(["triggerBackTest"]);
 
@@ -43,7 +37,7 @@ function goBackTest() {
   flex-direction: column;
   background-color: #757575;
   width: 400px;
-  height: 300px;
+  height: 240px;
   margin: 10px;
   padding: 0;
   position: relative;
@@ -69,7 +63,7 @@ p{
   margin-top: 24px;
 }
 .btn{
-  margin-top: 20px;
+  margin-top: 40px;
   margin-bottom: 5px;
   width: 158px;
   height: 37px;
@@ -92,11 +86,11 @@ p{
   justify-content: space-around;
 }
 .data-area{
-  width: 268px;
+  width: 200px;
   height: 42px;
-  background-color: #827E7E;
   margin-right: 20px;
-  margin-top: 6px;
+  margin-left: 30px;
+  margin-top: 4px;
   position: absolute;
   transform: translate(90px,12px);
 }
