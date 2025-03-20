@@ -99,10 +99,11 @@ watch(() => props.trainsettings, (newval) => {
 .checkbox-container {
   margin-top: 10px;
   padding-left: 10px;
-  overflow: hidden;
   max-height: 200px;
-  opacity: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
 
 .checkbox-container label {
   display: block;

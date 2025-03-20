@@ -44,13 +44,9 @@ function showCurrencyList() {
   emit("triggerCurrencyList");
 }
 
-function createModel() {
-  const newModelSet = new ModelSet(modelSetName.value, props.currencies);
-  emit("triggerCreateNewModel", newModelSet);
-
-  // 如果 currencies 为空则提示
+async function createModel() {
   if (!props.currencies || props.currencies.length === 0) {
-    alert("Please select currencies before creating model.");
+    alert("⚠️ Please select currencies before creating model.");
     return;
   }
 
@@ -58,6 +54,49 @@ function createModel() {
   const end_date = props.currencies[0].dates[1];
   const symbols = props.currencies.map(item => item.name);
 
+  if (!start_date || !end_date) {
+    alert("⚠️ Please select a valid time range before creating model.");
+    return;
+  }
+
+  // 🔍 校验每个币的上线时间
+  const earlySymbols = [];
+
+  for (const symbol of symbols) {
+    try {
+      const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=1&startTime=0`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!Array.isArray(data) || data.length === 0) continue;
+
+      const earliestTimestamp = data[0][0]; // open_time 是时间戳
+      const earliestDate = new Date(earliestTimestamp);
+      const selectedStart = new Date(start_date);
+
+      if (selectedStart < earliestDate) {
+        earlySymbols.push({
+          symbol,
+          earliestDateStr: earliestDate.toISOString().split('T')[0]
+        });
+      }
+
+    } catch (err) {
+      console.error(`⚠️ Failed to fetch start time for ${symbol}:`, err);
+    }
+  }
+
+  // 如果有早于币种上线时间的，提示用户并中断
+  if (earlySymbols.length > 0) {
+    let message = "❌ The following currencies have a start date earlier than their listing date:\n\n";
+    earlySymbols.forEach(item => {
+      message += `- ${item.symbol}: Earliest available date is ${item.earliestDateStr}\n`;
+    });
+    alert(message);
+    return;
+  }
+
+  // ✅ 所有币时间校验通过 → 发起后端请求
   const requestData = { start_date, end_date, symbols };
 
   fetch("http://localhost:5000/api/fetch_crypto_data", {
@@ -69,24 +108,26 @@ function createModel() {
     mode: "cors"
   })
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
         return response.json();
       })
       .then(data => {
-        console.log("✅ Success:", data);
         if (data.processing_status === "success") {
-          alert("Data_Collection.py call successfully! Data processing completed.");
+          alert("✅ Python backend executed successfully! Model will now be created.");
+          const newModelSet = new ModelSet(modelSetName.value, props.currencies);
+          emit("triggerCreateNewModel", newModelSet);
+          alert("🎉 Model created successfully!");
         } else {
-          alert(`Data_Collection.py call successfully, but data processing failed: ${data.processing_message}`);
+          alert(`⚠️ Data fetch completed, but data processing failed: ${data.processing_message}`);
         }
       })
       .catch(error => {
         console.error("🔥 Frontend Error:", error);
-        alert("Failed to call Data_Collection.py, Check the console.");
+        alert("❌ Failed to call backend. Please check the server.");
       });
 }
+
+
 
 
 function Cancel() {

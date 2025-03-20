@@ -35,11 +35,11 @@
       <!--Graph-Part-->
       <!-------------->
       <transition name="showGraph-relation">
-        <relation class="relation" v-if="waitisGraphVisible" :class="{ swapped: isDiagramVisible }" :state-switch-r="isDiagramVisible"/>
+        <relation class="relation" v-if="waitisGraphVisible" :class="{ swapped: !isDiagramVisible }" :state-switch-r="!isDiagramVisible"/>
       </transition>
 
       <transition name="showGraph-diagram">
-        <diagram class="diagram" v-if="waitisGraphVisible" :class="{ swapped: isDiagramVisible }" :state-switch-d="isDiagramVisible"/>
+        <diagram class="diagram" v-if="waitisGraphVisible" :class="{ swapped: !isDiagramVisible }" :state-switch-d="!isDiagramVisible"/>
       </transition>
 
       <transition name="showGraph-switchbtn">

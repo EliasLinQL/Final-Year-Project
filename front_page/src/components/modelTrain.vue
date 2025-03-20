@@ -87,9 +87,15 @@ function startTrain() {
 
 
 function callDetail() {
+  if (!selectedTrainSet.value) {
+    alert("Please select a model before previewing details!");
+    return;
+  }
+
   isIconRotated.value = !isIconRotated.value;
   emit("triggerDetail");
 }
+
 
 function createModel() {
   emit("triggerGoCreate");

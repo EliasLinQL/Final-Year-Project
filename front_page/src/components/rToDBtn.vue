@@ -1,8 +1,8 @@
 <template>
   <div class="box-rToDBtn" @click="turn">
     <div class="switch" :class="{'switch-1': isDiagramVisible, 'switch-2': !isDiagramVisible}" />
-    <p class="switch-p1" v-if="TextSwitchVisible && isDiagramVisible">Diagram</p>
-    <p class="switch-p2" v-if="TextSwitchVisible && !isDiagramVisible">Relation</p>
+    <p class="switch-p1" v-if="TextSwitchVisible && isDiagramVisible">TestResult</p>
+    <p class="switch-p2" v-if="TextSwitchVisible && !isDiagramVisible">Diagram</p>
   </div>
 </template>
 
