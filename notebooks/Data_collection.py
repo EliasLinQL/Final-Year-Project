@@ -1,12 +1,11 @@
 import sys
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import time
 import pandas as pd
 import requests
-import subprocess  # 用于执行 Data_processing.py
+import subprocess
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # 允许跨域请求
@@ -18,16 +17,12 @@ BASE_URL = 'https://api.binance.com'
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(project_root, 'data')
 
-# 确保 data 目录存在
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
 
-
+# ----------------- 接口：数据采集 + 处理 -----------------
 @app.route('/api/fetch_crypto_data', methods=['POST'])
 def fetch_crypto_data():
-    """
-    接收前端请求，获取加密货币数据，并在成功后调用 Data_processing.py 处理数据。
-    """
     try:
         request_data = request.json
         print("✅ Received Request Data:", request_data)
@@ -41,10 +36,8 @@ def fetch_crypto_data():
 
         print(f"📅 Fetching data from {start_date} to {end_date} for symbols: {symbols}")
 
-        # 采集数据
         file_paths = fetch_and_save_crypto_data(symbols, start_time, end_time)
 
-        # 调用数据处理
         if file_paths:
             print("🚀 Fetching complete! Now executing Data_processing.py...")
             processing_result = execute_data_processing()
@@ -61,37 +54,28 @@ def fetch_crypto_data():
         print("🔥 ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
 
-
-
+# ----------------- 数据采集函数 -----------------
 def fetch_and_save_crypto_data(symbols, start_time, end_time):
-    """
-    根据提供的交易对和时间范围，从 Binance API 获取数据，并存储为 CSV 文件
-    """
-    limit = 1000  # 最大请求限制
-    file_paths = []  # 记录已保存的文件
+    limit = 1000
+    file_paths = []
 
-    # 转换时间戳为 YYYY-MM-DD 格式
     start_date_str = time.strftime('%Y-%m-%d', time.gmtime(start_time / 1000))
     end_date_str = time.strftime('%Y-%m-%d', time.gmtime(end_time / 1000))
 
     for symbol in symbols:
-        # 更新 CSV 文件名格式
         output_file = os.path.join(data_dir, f'{symbol}_{start_date_str}_{end_date_str}.csv')
         final_df = pd.DataFrame()
         current_start_time = start_time
 
         while current_start_time < end_time:
-            url = (
-                f"{BASE_URL}/api/v3/klines?symbol={symbol}&interval=4h"
-                f"&limit={limit}&startTime={current_start_time}&endTime={end_time}"
-            )
+            url = f"{BASE_URL}/api/v3/klines?symbol={symbol}&interval=4h&limit={limit}&startTime={current_start_time}&endTime={end_time}"
             print(f"🔍 Fetching data for {symbol} from: {url}")
             response = requests.get(url)
             data = response.json()
 
-            if not data or isinstance(data, dict):  # 如果 API 返回错误信息
+            if not data or isinstance(data, dict):
                 print(f"⚠️ No data returned for {symbol}")
-                break  # 退出循环
+                break
 
             df = pd.DataFrame(data, columns=[
                 'open_time', 'open', 'high', 'low', 'close', 'volume',
@@ -105,28 +89,24 @@ def fetch_and_save_crypto_data(symbols, start_time, end_time):
 
             final_df = pd.concat([final_df, df], ignore_index=True)
 
-            # 更新起始时间
             current_start_time = int(df['open_time'].iloc[-1].timestamp() * 1000) + 1
 
         if not final_df.empty:
             final_df.to_csv(output_file, index=False)
             file_paths.append(output_file)
-            print(f"✅ Data for {symbol} successfully saved to {output_file}")
+            print(f"✅ Data for {symbol} saved to {output_file}")
 
-    return file_paths  # 返回所有生成的 CSV 文件路径
+    return file_paths
 
-
+# ----------------- 数据处理脚本执行函数 -----------------
 def execute_data_processing():
     try:
         script_path = os.path.join(os.path.dirname(__file__), 'Data_processing.py')
-        python_executable = sys.executable  # 获取当前 Flask 运行的 Python 解释器
+        python_executable = sys.executable
 
         if os.path.exists(script_path):
-            print(f"⚙️ Using Python: {python_executable}")
             print(f"⚙️ Executing {script_path} ...")
             result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding="utf-8")
-
-
             if result.returncode == 0:
                 print("✅ Data_processing.py executed successfully!")
                 return {"status": "success", "message": "Data processing completed successfully"}
@@ -140,7 +120,40 @@ def execute_data_processing():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+# ----------------- 模型训练脚本执行函数 -----------------
+def execute_model_training():
+    try:
+        script_path = os.path.join(os.path.dirname(__file__), 'LSTM-GCN Model.py')
+        python_executable = sys.executable
 
+        if os.path.exists(script_path):
+            print(f"⚙️ Executing training script: {script_path}")
+            result = subprocess.run([python_executable, script_path], capture_output=True, text=True, encoding='utf-8')
+            if result.returncode == 0:
+                print("✅ LSTM-GCN Model executed successfully!")
+                return {"status": "success", "message": "Model training completed successfully"}
+            else:
+                print("❌ Error executing LSTM-GCN Model.py")
+                print(result.stderr)
+                return {"status": "error", "message": result.stderr}
+        else:
+            return {"status": "error", "message": "LSTM-GCN Model.py not found"}
 
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ----------------- 新增接口：仅训练模型 -----------------
+@app.route('/api/train_model_only', methods=['POST'])
+def train_model_only():
+    try:
+        training_result = execute_model_training()
+        return jsonify({
+            "status": training_result["status"],
+            "message": training_result["message"]
+        }), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# ----------------- 启动 Flask 应用 -----------------
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
