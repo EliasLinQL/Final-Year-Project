@@ -1,16 +1,12 @@
 <template>
   <div class="box-column">
     <div class="box-row">
-      <p class="p1">
-        Backtesting
-      </p>
+      <p class="p1">Backtesting</p>
     </div>
     <div class="box-row">
-      <p class="p2">
-        Currency:
-      </p>
+      <p class="p2">Currency:</p>
       <div class="data-area">
-        <train-checkmenu/>
+        <currency-checkmenu @updateSelectedCurrency="handleCurrencySelect" />
       </div>
     </div>
     <div class="box-row box-btn">
@@ -20,15 +16,17 @@
 </template>
 
 <script setup>
+import CurrencyCheckmenu from "@/components/currencyCheckmenu.vue";
 
-import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
-
-const emit = defineEmits(["triggerBackTest"]);
+const emit = defineEmits(["triggerBackTest", "triggerCurrencyToApp"]);
 
 function goBackTest() {
   emit("triggerBackTest");
 }
 
+function handleCurrencySelect(selected) {
+  emit("triggerCurrencyToApp", selected); // 发给 App.vue
+}
 </script>
 
 <style scoped>

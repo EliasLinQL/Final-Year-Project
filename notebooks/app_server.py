@@ -1,5 +1,5 @@
 # backend/app_server.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import os
 import time
@@ -10,6 +10,9 @@ from Data_collection import fetch_crypto_data
 
 app = Flask(__name__)
 CORS(app)
+
+# IMAGE_DIR = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
+IMAGE_DIR = r"C:\Users\32561\Desktop\lqf\results"
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(project_root, 'data')
@@ -57,6 +60,24 @@ def api_train_model():
     except Exception as e:
         print("❌ API Error (train_model):", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/image/<filename>')
+def serve_image(filename):
+    file_path = os.path.join(IMAGE_DIR, filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, mimetype='image/png')  # or 'image/jpeg'
+    return "Image Not Found", 404
+
+@app.route('/api/image/<model>/<currency>', methods=['GET'])
+def serve_prediction_image(model, currency):
+    results_dir = os.path.join(os.path.dirname(__file__), '..', 'results', model)
+    filename = f"{currency}_Actual_vs_Predicted.png"
+    file_path = os.path.join(results_dir, filename)
+
+    if os.path.exists(file_path):
+        return send_from_directory(results_dir, filename)
+    else:
+        return {"status": "error", "message": "Image not found"}, 404
 
 def execute_data_processing():
     try:

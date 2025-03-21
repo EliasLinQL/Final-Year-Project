@@ -2,14 +2,17 @@
   <div class="box-column" :class="{ box_switch: props.stateSwitchR }">
     <img
         v-if="props.selectedModel"
-        :src="`/public/${props.selectedModel}_loss.png`"
+        :src="imageUrl"
         alt="Model Loss Image"
         class="model-image"
+        @error="handleImageError"
     />
   </div>
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue';
+
 const props = defineProps({
   stateSwitchR: {
     type: Boolean,
@@ -20,6 +23,19 @@ const props = defineProps({
     default: ''
   }
 });
+
+// 计算图片路径（从 Flask 后端接口加载）
+const imageUrl = computed(() => {
+  return props.selectedModel
+      ? `http://localhost:5000/api/image/${props.selectedModel}_loss.png`
+      : '';
+});
+
+// 处理加载失败时显示备用内容
+function handleImageError(event) {
+  event.target.src = ''; // 或换成默认图，如 /placeholder.png
+  console.warn("⚠️ 图片加载失败:", imageUrl.value);
+}
 </script>
 
 <style scoped>
@@ -49,9 +65,8 @@ p {
 .model-image {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 可改为 cover 或 fill */
+  object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
-
 </style>

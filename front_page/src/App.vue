@@ -42,11 +42,18 @@
             :state-switch-r="!isDiagramVisible"
             :selected-model="selectedModelName"
         />
-
       </transition>
 
       <transition name="showGraph-diagram">
-        <diagram class="diagram" v-if="waitisGraphVisible" :class="{ swapped: !isDiagramVisible }" :state-switch-d="!isDiagramVisible"/>
+        <diagram
+            class="diagram"
+            v-if="waitisGraphVisible"
+            :class="{ swapped: !isDiagramVisible }"
+            :state-switch-d="!isDiagramVisible"
+            :selected-currency="selectedCurrencyForDiagram"
+            :selected-model="selectedModelName"
+        />
+
       </transition>
 
       <transition name="showGraph-switchbtn">
@@ -58,7 +65,12 @@
       </transition>
 
       <transition name="showGraph-btc">
-        <back-test-control class="btc" v-if="btcVisible" @triggerBackTest="goBackTest"/>
+        <back-test-control
+            class="btc"
+            v-if="btcVisible"
+            @triggerBackTest="goBackTest"
+            @triggerCurrencyToApp="handleCurrencyFromBackTest"
+        />
       </transition>
 
     </div>
@@ -95,6 +107,8 @@ const Currencies = ref([]);
 const NewTrainSet = ref([]);
 const TrainSet = ref(null);
 const selectedModelName = ref(null);
+const selectedCurrencyForDiagram = ref(null);
+
 
  // -----------------------
  // ModelInfo Function Part
@@ -210,7 +224,10 @@ function rToD(){
 function goBackTest() {
   isBackTestVisible.value = true;
 }
-
+function handleCurrencyFromBackTest(currency) {
+  selectedCurrencyForDiagram.value = currency;
+  console.log("✅ 传给 Diagram 的币种是：", currency);
+}
 
 // --------------------------
 // BackTestInfo Function Part
