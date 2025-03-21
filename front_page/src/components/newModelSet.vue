@@ -112,15 +112,16 @@ async function createModel() {
         return response.json();
       })
       .then(data => {
-        if (data.processing_status === "success") {
+        if (data.status === "success") {
           alert("✅ Python backend executed successfully! Model will now be created.");
           const newModelSet = new ModelSet(modelSetName.value, props.currencies);
           emit("triggerCreateNewModel", newModelSet);
           alert("🎉 Model created successfully!");
         } else {
-          alert(`⚠️ Data fetch completed, but data processing failed: ${data.processing_message}`);
+          alert(`⚠️ Data fetch completed, but data processing failed: ${data.message}`);
         }
       })
+
       .catch(error => {
         console.error("🔥 Frontend Error:", error);
         alert("❌ Failed to call backend. Please check the server.");
