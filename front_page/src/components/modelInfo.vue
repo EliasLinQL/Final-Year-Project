@@ -6,7 +6,7 @@
     <div class="box-row">
       <p class="p2">Existing Models</p>
       <div class="box-checkmenu">
-        <model-checkmenu/>
+        <model-checkmenu @updateSelectedModel="handleSelectedModel" />
       </div>
     </div>
     <div class="box-row">
@@ -36,9 +36,19 @@
 
 <script setup>
 import ModelCheckmenu from "@/components/modelCheckmenu.vue";
+import {ref} from "vue";
 
 //定义子组件触发父组件事件
-const emit = defineEmits(['triggerTrain','triggerGraph']);
+const emit = defineEmits(['triggerTrain','triggerGraph','triggerModelToApp']);
+
+const selectedModel = ref(null);
+
+function handleSelectedModel(modelName) {
+  console.log("✅ 接收到选中模型：", modelName); // 👈 确认触发
+  selectedModel.value = modelName;
+  // 👉 把数据继续传给 App.vue
+  emit('triggerModelToApp', modelName);
+}
 
 //通过按钮事件来通知父组件触发对应事件
 function goTrain() {
@@ -47,6 +57,8 @@ function goTrain() {
 function showGraph(){
   emit("triggerGraph");
 }
+
+
 
 </script>
 

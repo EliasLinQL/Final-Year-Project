@@ -8,7 +8,12 @@
     <transition name="checkbox-fade">
       <div v-show="isMenuVisible" class="checkbox-container">
         <label v-for="(model, index) in models" :key="index">
-          <input type="checkbox" v-model="model.selected" />
+          <input
+              type="radio"
+              name="modelSelection"
+              v-model="selectedModel"
+              :value="model.name"
+          />
           {{ model.name }}
         </label>
       </div>
@@ -17,22 +22,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
+
+const emit = defineEmits(['updateSelectedModel']);
 
 const isMenuVisible = ref(false);
 
-// 模型数据数组
+// ✅ 固定模型选项
 const models = ref([
-  { name: 'Model q', selected: false },
-  { name: 'Model 2', selected: false },
-  { name: 'Model 3', selected: false },
-  { name: 'Model 4', selected: false },
+  {name: 'model_1'},
+  {name: 'model_2'},
+  {name: 'model_3'}
 ]);
 
+const selectedModel = ref(null);
+
+// 切换菜单显示
 function toggleMenu() {
-  // 切换选单显示和隐藏状态
   isMenuVisible.value = !isMenuVisible.value;
 }
+
+// 监听选中项变化 → 通知父组件
+watch(selectedModel, (newVal) => {
+  emit('updateSelectedModel', newVal);
+});
 </script>
 
 <style scoped>
@@ -90,13 +103,13 @@ function toggleMenu() {
   margin-right: 10px;
 }
 
-/* 添加过渡动画 */
 .checkbox-fade-enter-active,
 .checkbox-fade-leave-active {
   transition: all 0.4s linear;
 }
 
-.checkbox-fade-enter-from, .checkbox-fade-leave-to {
+.checkbox-fade-enter-from,
+.checkbox-fade-leave-to {
   max-height: 0;
   opacity: 80%;
 }

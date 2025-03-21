@@ -20,43 +20,43 @@ let binanceSocket;
 let priceHistory = [];
 let earliestTime = null; // 记录最早的时间戳
 
-onMounted(async () => {
-  const DiagramElement = document.getElementById("Diagram");
-
-  if (DiagramElement) {
-    chart = createChart(DiagramElement, {
-      width: DiagramElement.clientWidth,
-      height: DiagramElement.clientHeight,
-      layout: {
-        backgroundColor: "#ffffff",
-        textColor: "#000000",
-      },
-    });
-
-    // 添加 K 线图
-    candlestickSeries = chart.addCandlestickSeries();
-
-    // 添加一条均线（移动平均线）
-    lineSeries = chart.addLineSeries({ color: "blue", lineWidth: 2 });
-
-    // **先获取最近半年的 15 分钟历史数据**
-    await fetchHistoricalData();
-
-    // **再连接 WebSocket 获取实时数据**
-    connectWebSocket();
-
-    // 监听窗口大小变化
-    const resizeObserver = new ResizeObserver(() => {
-      if (DiagramElement) {
-        chart.resize(DiagramElement.clientWidth, DiagramElement.clientHeight);
-      }
-    });
-
-    resizeObserver.observe(DiagramElement);
-  } else {
-    console.error("❌ Element with id 'Diagram' not found");
-  }
-});
+// onMounted(async () => {
+//   const DiagramElement = document.getElementById("Diagram");
+//
+//   if (DiagramElement) {
+//     chart = createChart(DiagramElement, {
+//       width: DiagramElement.clientWidth,
+//       height: DiagramElement.clientHeight,
+//       layout: {
+//         backgroundColor: "#ffffff",
+//         textColor: "#000000",
+//       },
+//     });
+//
+//     // 添加 K 线图
+//     candlestickSeries = chart.addCandlestickSeries();
+//
+//     // 添加一条均线（移动平均线）
+//     lineSeries = chart.addLineSeries({ color: "blue", lineWidth: 2 });
+//
+//     // **先获取最近半年的 15 分钟历史数据**
+//     await fetchHistoricalData();
+//
+//     // **再连接 WebSocket 获取实时数据**
+//     connectWebSocket();
+//
+//     // 监听窗口大小变化
+//     const resizeObserver = new ResizeObserver(() => {
+//       if (DiagramElement) {
+//         chart.resize(DiagramElement.clientWidth, DiagramElement.clientHeight);
+//       }
+//     });
+//
+//     resizeObserver.observe(DiagramElement);
+//   } else {
+//     console.error("❌ Element with id 'Diagram' not found");
+//   }
+// });
 
 // **获取最近半年的 15 分钟 K 线数据**
 async function fetchHistoricalData() {

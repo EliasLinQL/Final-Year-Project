@@ -63,11 +63,6 @@ function startTrain() {
     return;
   }
 
-  // const start_date = selectedTrainSet.value.currencies[0].dates[0];
-  // const end_date = selectedTrainSet.value.currencies[0].dates[1];
-  // const symbols = selectedTrainSet.value.currencies.map(currencies => currencies.name);
-  //
-  // const requestData = { start_date, end_date, symbols };
 
   fetch('http://localhost:5001/api/train_model', {
     method: 'POST'

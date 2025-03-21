@@ -5,7 +5,7 @@
       <!--Model-Info-Part-->
       <!------------------->
       <transition name="backtest-infofade">
-        <model-info class="info"  :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph"/>
+        <model-info class="info"  :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph" @triggerModelToApp="handleModelFromChild"/>
       </transition>
 
       <!-------------------->
@@ -35,7 +35,14 @@
       <!--Graph-Part-->
       <!-------------->
       <transition name="showGraph-relation">
-        <relation class="relation" v-if="waitisGraphVisible" :class="{ swapped: !isDiagramVisible }" :state-switch-r="!isDiagramVisible"/>
+        <relation
+            class="relation"
+            v-if="waitisGraphVisible"
+            :class="{ swapped: !isDiagramVisible }"
+            :state-switch-r="!isDiagramVisible"
+            :selected-model="selectedModelName"
+        />
+
       </transition>
 
       <transition name="showGraph-diagram">
@@ -87,6 +94,7 @@ const isCurrencyListVisible = ref(false);
 const Currencies = ref([]);
 const NewTrainSet = ref([]);
 const TrainSet = ref(null);
+const selectedModelName = ref(null);
 
  // -----------------------
  // ModelInfo Function Part
@@ -115,6 +123,11 @@ function showGraph() {
   btcVisible.value = true;
   isModelSetDetailVisible.value = false;
   isCurrencyListVisible.value = false;
+}
+
+function handleModelFromChild(modelName) {
+  selectedModelName.value = modelName;
+  console.log("传入 Relation 的模型：", selectedModelName.value);
 }
 
 // ------------------------
