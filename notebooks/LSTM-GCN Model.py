@@ -292,15 +292,9 @@ optimizer = optim_lookahead.Lookahead(base_optimizer, k=5, alpha=0.5)  # k: sync
 scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer.optimizer, T_0=10, T_mult=2)
 
 
-# ----------------- Optimized Model Training -----------------
+# ----------------- Optimized Model Training (Enhanced with Multiple Models) -----------------
 class EarlyStopping:
     def __init__(self, patience=5, min_delta=1e-4, cooldown=2):
-        """
-        Initialize EarlyStopping with:
-        - patience: Number of epochs to wait after no improvement.
-        - min_delta: Minimum change in loss to be considered as improvement.
-        - cooldown: Additional wait time before stopping to allow slight fluctuations.
-        """
         self.patience = patience
         self.min_delta = min_delta
         self.best_loss = float("inf")
@@ -309,154 +303,152 @@ class EarlyStopping:
         self.cooldown = cooldown
 
     def check_early_stop(self, val_loss):
-        """
-        Check if training should be stopped early.
-        - val_loss: Current validation loss.
-        """
         if val_loss + self.min_delta < self.best_loss:
             self.best_loss = val_loss
-            self.counter = 0  # Reset counter if loss improves
-            self.cooldown_counter = 0  # Reset cooldown counter
+            self.counter = 0
+            self.cooldown_counter = 0
         else:
-            self.counter += 1  # Increment counter if no improvement
+            self.counter += 1
             if self.counter >= self.patience:
-                self.cooldown_counter += 1  # Allow cooldown period
+                self.cooldown_counter += 1
                 if self.cooldown_counter >= self.cooldown:
-                    return True  # Stop training
+                    return True
+        return False
 
-        return False  # Continue training
-
-
-# Initialize EarlyStopping
-early_stopper = EarlyStopping(patience=5, cooldown=2)  # Dynamic patience with cooldown
 
 def mixup_data(x, y, alpha=0.2):
-    """
-    Apply Mixup Data Augmentation.
-    - x: Input batch
-    - y: Target batch
-    - alpha: Beta distribution parameter
-    Returns:
-    - Mixed inputs and corresponding new labels
-    """
     if alpha > 0:
         lam = np.random.beta(alpha, alpha)
     else:
         lam = 1
     batch_size = x.size(0)
     index = torch.randperm(batch_size).to(x.device)
-
     mixed_x = lam * x + (1 - lam) * x[index, :]
     mixed_y = lam * y + (1 - lam) * y[index]
     return mixed_x, mixed_y
 
-# Moving Average Loss Smoothing
+
 def update_running_loss(running_loss, new_loss, beta=0.9):
-    """
-    Exponential Moving Average of Loss.
-    - running_loss: Current average loss
-    - new_loss: Latest batch loss
-    - beta: Smoothing factor (higher value keeps older losses)
-    """
     return beta * running_loss + (1 - beta) * new_loss if running_loss else new_loss
 
+# Training Loop with Multiple Models
+num_models = 3
+is_first_model = True
+for model_index in range(num_models):
+    # Reinitialize early stopping for each model
+    early_stopper = EarlyStopping(patience=5, cooldown=2)
 
-# Training Loop
-running_loss = None  # Initialize moving average loss
-num_epochs = 75
+    # Check if it is the first model, skip reinitialization if so
+    if not is_first_model:
+        # Reinitialize model, optimizer, and scheduler for each run
+        model = LSTMGCNModel(
+            lstm_input_dim=X.shape[2],
+            lstm_hidden_dim=512,
+            lstm_num_layers=4,
+            gcn_input_dim=features_df.shape[1] - 1,
+            gcn_hidden_dim=32,
+            gcn_output_dim=8,
+            combined_output_dim=16,
+            dropout=0.3
+        ).to(device)
+        # Reapply weight initialization to ensure randomness
+        model.apply(initialize_weights)
 
-for epoch in range(num_epochs):
-    model.train()
-    epoch_loss = 0.0
+        optimizer = optim_lookahead.Lookahead(
+            optim.AdamW(model.parameters(), lr=0.0001, weight_decay=1e-5), k=5, alpha=0.5
+        )
+        # Clear optimizer state to remove any residual effects
+        optimizer.zero_grad(set_to_none=True)
 
-    for X_batch, y_batch in train_loader:
-        X_batch, y_batch = X_batch.to(device), y_batch.to(device)
-        gcn_input = torch.rand(correlation_matrix.shape[0], features_df.shape[1] - 1).to(device)
+        # Reinitialize the scheduler to ensure it starts from scratch
+        scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer.optimizer, T_0=10, T_mult=2)
 
-        # Apply Mixup Augmentation
-        X_batch, y_batch = mixup_data(X_batch, y_batch)
+    # After first model, set flag to False
+    is_first_model = False
 
-        optimizer.zero_grad()
-        outputs = model(X_batch, gcn_input, edge_index.to(device))
-        loss = criterion(outputs.squeeze(), y_batch)
+    running_loss = None
+    num_epochs = 75
+    model_losses = []  # List to store loss for each epoch
+    for epoch in range(num_epochs):
+        model.train()
+        epoch_loss = 0.0
+        for X_batch, y_batch in train_loader:
+            X_batch, y_batch = X_batch.to(device), y_batch.to(device)
+            gcn_input = torch.rand(correlation_matrix.shape[0], features_df.shape[1] - 1).to(device)
+            X_batch, y_batch = mixup_data(X_batch, y_batch)
+            optimizer.zero_grad()
+            outputs = model(X_batch, gcn_input, edge_index.to(device))
+            loss = criterion(outputs.squeeze(), y_batch)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5)
+            optimizer.step()
+            epoch_loss += loss.item()
+        avg_loss = epoch_loss / len(train_loader)
+        model_losses.append(avg_loss)  # Store average loss for each epoch
+        # Reset scheduler step to prevent continuation of the previous model's state
+        scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer.optimizer, T_0=10, T_mult=2)
+        scheduler.step()
+        running_loss = update_running_loss(running_loss, avg_loss)
+        print(f"Model {model_index+1}, Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f} (EMA: {running_loss:.4f})")
+        if early_stopper.check_early_stop(avg_loss):
+            print("Early stopping triggered!")
+            break
+    model_save_path = os.path.join(project_root, "models", f"model_{model_index+1}.pt")
+    torch.save(model.state_dict(), model_save_path)
+    print(f"Model {model_index+1} saved at {model_save_path}")
 
-        loss.backward()
+    # Plot loss curve
+    plt.figure(figsize=(10, 6))
+    plt.plot(model_losses, label=f'Model {model_index+1} Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title(f'Model {model_index+1} Loss Curve')
+    plt.legend()
+    plt.grid(True)
+    loss_plot_path = os.path.join(project_root, 'results', f'model_{model_index+1}_loss.png')
+    plt.savefig(loss_plot_path)
+    print(f"Loss plot saved at {loss_plot_path}")
+    plt.show()
 
-        # Apply Gradient Clipping
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5)
-
-        optimizer.step()
-
-        epoch_loss += loss.item()
-
-    avg_loss = epoch_loss / len(train_loader)
-
-    # Apply Learning Rate Scheduler
-    scheduler.step()
-
-    # Update Running Loss (EMA)
-    running_loss = update_running_loss(running_loss, avg_loss)
-
-    print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f} (EMA: {running_loss:.4f}), LR: {optimizer.param_groups[0]['lr']}")
-
-    # Check Early Stopping
-    if early_stopper.check_early_stop(avg_loss):
-        print("Early stopping triggered after cooldown!")
-        break
-
-# ----------------- Model Testing -----------------
-model.eval()
-y_pred, y_true = [], []
-with torch.no_grad():
-    for X_batch, y_batch in test_loader:
-        X_batch, y_batch = X_batch.to(device), y_batch.to(device)
-        gcn_input = torch.rand(correlation_matrix.shape[0], features_df.shape[1] - 1).to(device)
-        outputs = model(X_batch, gcn_input, edge_index.to(device))
-        y_pred.extend(outputs.squeeze().cpu().numpy())
-        y_true.extend(y_batch.cpu().numpy())
-
-y_pred = np.array(y_pred)
-y_true = np.array(y_true)
-
-# Load BTCUSDT trading data
-btc_data_file = os.path.join(data_dir, "BTCUSDT_2021_2024.csv")
-btc_df = pd.read_csv(btc_data_file)
-
-btc_df['date'] = pd.to_datetime(btc_df['open_time'])
-btc_df.set_index('date', inplace=True)
-btc_prices = btc_df['close'][-len(y_test):].values
-
-# Ensure lengths match
-if len(y_true) > len(btc_prices[:-1]):
-    y_true = y_true[:len(btc_prices[:-1])]
-elif len(y_true) < len(btc_prices[:-1]):
-    btc_prices = btc_prices[:len(y_true) + 1]
-
-true_prices = btc_prices[:-1] * (1 + y_true)
-predicted_prices = btc_prices[:-1] * (1 + y_pred[:len(y_true)])
-
-# Plot actual vs. predicted
-test_index = btc_df.index[-len(true_prices):]
-comparison_df = pd.DataFrame({'Actual Price': true_prices, 'Predicted Price': predicted_prices}, index=test_index)
-
-plt.figure(figsize=(14, 7))
-plt.plot(comparison_df.index, comparison_df['Actual Price'], label='Actual BTCUSDT Price', color='blue', linewidth=2)
-plt.plot(comparison_df.index, comparison_df['Predicted Price'], label='Predicted BTCUSDT Price', color='orange', linestyle='dashed', linewidth=2)
-plt.title('BTCUSDT: Actual vs Predicted Prices')
-plt.xlabel('Date')
-plt.ylabel('Price (USDT)')
-plt.legend()
-plt.grid(True)
-
-# Save the plot
-output_plot_path = os.path.join(project_root, "results", "BTCUSDT_Actual_vs_Predicted.png")
-plt.savefig(output_plot_path, format='png', dpi=300)
-print(f"Comparison chart saved to {output_plot_path}")
-
-# Save prediction results to CSV
-output_csv_path = os.path.join(project_root, "results", "BTCUSDT_Predictions.csv")
-comparison_df.to_csv(output_csv_path, index_label='Date')
-print(f"Predicted results saved to {output_csv_path}")
-
-plt.tight_layout()
-plt.show()
+# ----------------- Model Testing (Enhanced for Multiple Models) -----------------
+for model_index in range(num_models):
+    model_path = os.path.join(project_root, "models", f"model_{model_index+1}.pt")
+    model.load_state_dict(torch.load(model_path))
+    print(f"Loaded model from {model_path}")
+    symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'TRXUSDT']
+    for symbol in symbols:
+        y_pred, y_true = [], []
+        with torch.no_grad():
+            for X_batch, y_batch in test_loader:
+                X_batch, y_batch = X_batch.to(device), y_batch.to(device)
+                gcn_input = torch.rand(correlation_matrix.shape[0], features_df.shape[1] - 1).to(device)
+                outputs = model(X_batch, gcn_input, edge_index.to(device))
+                y_pred.extend(outputs.squeeze().cpu().numpy())
+                y_true.extend(y_batch.cpu().numpy())
+        y_pred = np.array(y_pred)
+        y_true = np.array(y_true)
+        data_file = os.path.join(data_dir, f"{symbol}_2021_2024.csv")
+        df = pd.read_csv(data_file)
+        df['date'] = pd.to_datetime(df['open_time'])
+        df.set_index('date', inplace=True)
+        prices = df['close'][-len(y_test):].values
+        min_len = min(len(prices[:-1]), len(y_true))
+        true_prices = prices[-min_len-1:-1] * (1 + y_true[-min_len:])
+        predicted_prices = prices[-min_len-1:-1] * (1 + y_pred[-min_len:])
+        test_index = df.index[-min_len:]
+        comparison_df = pd.DataFrame({'Actual Price': true_prices, 'Predicted Price': predicted_prices}, index=test_index)
+        output_dir = os.path.join(project_root, 'results', f'model_{model_index+1}')
+        os.makedirs(output_dir, exist_ok=True)
+        output_plot_path = os.path.join(output_dir, f'{symbol}_Actual_vs_Predicted.png')
+        comparison_df.to_csv(os.path.join(output_dir, f'{symbol}_Predictions.csv'), index_label='Date')
+        plt.figure(figsize=(14, 7))
+        plt.plot(comparison_df.index, comparison_df['Actual Price'], label=f'Actual {symbol} Price', color='blue')
+        plt.plot(comparison_df.index, comparison_df['Predicted Price'], label=f'Predicted {symbol} Price', color='orange', linestyle='dashed')
+        plt.title(f'{symbol} Actual vs Predicted Prices (Model {model_index+1})')
+        plt.xlabel('Date')
+        plt.ylabel('Price (USDT)')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(output_plot_path)
+        print(f'Plot saved at {output_plot_path}')
+        plt.show()
