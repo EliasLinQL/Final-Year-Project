@@ -11,8 +11,7 @@ from Data_collection import fetch_crypto_data
 app = Flask(__name__)
 CORS(app)
 
-# IMAGE_DIR = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project\results"
-IMAGE_DIR = r"C:\Users\32561\Desktop\lqf\results"
+IMAGE_DIR = r"..\results"
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(project_root, 'data')

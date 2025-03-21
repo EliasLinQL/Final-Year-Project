@@ -5,10 +5,13 @@ import numpy as np
 import plotly.graph_objects as go
 
 # ------------------- 初始化路径 -------------------
-# project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
-project_root = r"C:\Users\32561\Desktop\lqf"
-data_dir = os.path.join(project_root, "data")
-results_dir = os.path.join(project_root, "results")
+import os
+
+# 相对路径设置
+data_dir ="../data"
+results_dir = "../results"
+
+# 创建结果目录
 os.makedirs(results_dir, exist_ok=True)
 
 # ------------------- 读取 CSV 数据 -------------------
