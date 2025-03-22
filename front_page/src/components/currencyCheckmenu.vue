@@ -39,9 +39,11 @@ function toggleMenu() {
 }
 
 watch(selectedCurrency, (newVal) => {
-  emit('updateSelectedCurrency', newVal); // 发出给父组件
+  emit('updateSelectedCurrency', newVal);
+  isMenuVisible.value = false;
 });
 </script>
+
 
 <style scoped>
 .checkbox-menu {

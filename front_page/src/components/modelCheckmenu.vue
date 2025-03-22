@@ -45,6 +45,7 @@ function toggleMenu() {
 // 监听选中项变化 → 通知父组件
 watch(selectedModel, (newVal) => {
   emit('updateSelectedModel', newVal);
+  isMenuVisible.value = false;
 });
 </script>
 

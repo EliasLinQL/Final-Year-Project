@@ -53,7 +53,15 @@
             :selected-currency="selectedCurrencyForDiagram"
             :selected-model="selectedModelName"
         />
+      </transition>
 
+      <transition name="showGraph-preVsAct">
+        <pre-vs-act
+            class="prevsAct"
+            v-if="waitisGraphVisible"
+            :selected-currency="selectedCurrencyForDiagram"
+            :selected-model="selectedModelName"
+        />
       </transition>
 
       <transition name="showGraph-switchbtn">
@@ -81,7 +89,7 @@
 import {ref, watch} from 'vue';
 import ModelInfo from "@/components/modelInfo.vue";
 import ModelTrain from "@/components/modelTrain.vue";
-import Relation from "@/components/relation.vue";
+import Relation from "@/components/backTestResult.vue";
 import BackTestControl from "@/components/backTestControl.vue";
 import Diagram from "@/components/diagram.vue";
 import RToDBtn from "@/components/rToDBtn.vue";
@@ -89,6 +97,7 @@ import TrainLoss from "@/components/trainLoss.vue";
 import NewModelSet from "@/components/newModelSet.vue";
 import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 import CurrencyList from "@/components/currencyList.vue";
+import PreVsAct from "@/components/preVsAct.vue";
 
 //控制参数
 const isTrainVisible = ref(false);
@@ -436,32 +445,25 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /*****************/
-  /* relation Part */
-  /*****************/
+  /***********************/
+  /* backTestResult Part */
+  /***********************/
 
   .relation{
     position: absolute;
-    top: 0.8%;
+    top: 0.6%;
     left: 25%;
     transition: transform 1.4s ease;
   }
 
   .relation.swapped {
-    transform: translateY(67vh);
+    transform: translateY(66.5vh);
   }
 
   .showGraph-relation-enter-active, .showGraph-relation-leave-active {
-    transition: all 1.6s ease;
+    transition: all 0.4s ease;
   }
-  .showGraph-relation-enter-from{
-    transform: translate(40%,-120%);
-    opacity: 1;
-  }
-  .showGraph-relation-leave-to{
-    transform: translate(40%,-120%);
-    opacity: 1;
-  }
+
 
 
   /****************/
@@ -470,27 +472,42 @@ watch(isGraphVisible, (newVal) => {
 
   .diagram{
     position: absolute;
-    top: 69.5%;
+    top: 68.9%;
     left: 25%;
     transition: transform 1.4s ease;
   }
 
   .diagram.swapped {
-    transform: translateY(-67.4vh);
+    transform: translateY(-67vh);
   }
 
   .showGraph-diagram-enter-active, .showGraph-diagram-leave-active {
-    transition: all 1.6s ease;
-  }
-  .showGraph-diagram-enter-from{
-    transform: translateY(120%);
-    opacity: 1;
-  }
-  .showGraph-diagram-leave-to{
-    transform: translateY(120%);
-    opacity: 1;
+    transition: all 0.4s ease;
   }
 
+  /*****************/
+  /* preVsAct Part */
+  /*****************/
+  .prevsAct{
+    position: absolute;
+    top: 68.9%;
+    left: 51.5%;
+    transition: transform 1.4s ease;
+  }
+
+  .showGraph-preVsAct-enter-active, .showGraph-preVsAct-leave-active {
+    transition: all 0.4s ease;
+  }
+
+  .showGraph-preVsAct-enter-from {
+    transform: translateY(180%);
+    opacity: 0;
+  }
+
+  .showGraph-preVsAct-leave-to {
+    transform: translateY(180%);
+    opacity: 0;
+  }
 
   /****************/
   /* rToDBtn Part */

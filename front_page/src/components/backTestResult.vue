@@ -21,6 +21,10 @@ const props = defineProps({
   selectedModel: {
     type: String,
     default: ''
+  },
+  selectedCurrency: {
+    type: String,
+    default: ''
   }
 });
 
@@ -52,7 +56,7 @@ function handleImageError(event) {
 }
 
 .box_switch {
-  width: 540px;
+  width: 450px;
   height: 270px;
 }
 
