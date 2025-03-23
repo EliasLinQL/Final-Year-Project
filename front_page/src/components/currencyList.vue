@@ -54,7 +54,6 @@ const currencies = ref([
   { currency: new CurrencySet("DOGEUSDT", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
   { currency: new CurrencySet("BTCUSDT", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
   { currency: new CurrencySet("ETHUSDT", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
-  { currency: new CurrencySet("USDT", ["", ""], "/currency_icon/tether-usdt-logo.png"), selected: false },
   { currency: new CurrencySet("SOLUSDT", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
   { currency: new CurrencySet("XRPUSDT", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
   { currency: new CurrencySet("BNBUSDT", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
