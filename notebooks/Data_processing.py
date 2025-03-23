@@ -4,19 +4,14 @@ import networkx as nx
 import numpy as np
 import plotly.graph_objects as go
 
-# ------------------- 初始化路径 -------------------
-import os
-
-# 相对路径设置
-data_dir ="../data"
+# ------------------- Initialize Paths -------------------
+data_dir = "../data"
 results_dir = "../results"
-
-# 创建结果目录
 os.makedirs(results_dir, exist_ok=True)
 
-# ------------------- 读取 CSV 数据 -------------------
+# ------------------- Load CSV Data -------------------
 file_list = [file for file in os.listdir(data_dir) if file.endswith('.csv')]
-print("CSV 文件列表:", file_list)
+print("📂 CSV file list:", file_list)
 
 crypto_prices = {}
 for file in file_list:
@@ -30,15 +25,14 @@ for file in file_list:
         df.set_index('datetime', inplace=True)
         crypto_prices[symbol] = df['close']
     else:
-        print(f"⚠️ 警告: 文件 `{file}` 缺少 open_time 列，跳过。")
+        print(f"⚠️ Warning: File `{file}` is missing 'open_time' column. Skipping.")
 
 prices_df = pd.DataFrame(crypto_prices)
 
-# ------------------- 计算收益率 -------------------
-# 修复 future warning
+# ------------------- Calculate Returns -------------------
 returns_df = prices_df.pct_change(fill_method=None).dropna()
 
-# ------------------- 特征工程 -------------------
+# ------------------- Feature Engineering -------------------
 def generate_temporal_features(prices_df, returns_df, lookback_days=6, ma_windows=[18, 54]):
     features = {}
     for symbol in prices_df.columns:
@@ -53,10 +47,10 @@ def generate_temporal_features(prices_df, returns_df, lookback_days=6, ma_window
 
 features_df = generate_temporal_features(prices_df, returns_df)
 
-print("✅ 已生成特征:")
+print("✅ Features generated successfully:")
 print(features_df.head())
 
-# ------------------- 构建相关图 -------------------
+# ------------------- Build Correlation Graph -------------------
 correlation_matrix = returns_df.corr()
 non_diag_values = correlation_matrix.values[np.triu_indices_from(correlation_matrix, k=1)]
 sorted_values = np.sort(non_diag_values)[::-1]
@@ -78,16 +72,15 @@ def find_threshold(corr_matrix, sorted_vals):
     return 0, None
 
 threshold, G = find_threshold(correlation_matrix, sorted_values)
-print(f"✅ 最终选定相关性阈值: {threshold}")
+print(f"✅ Selected correlation threshold: {threshold}")
 
-# ------------------- 图可视化与保存 -------------------
+# ------------------- Visualize & Save Graph -------------------
 if G is not None:
-    print("📊 图结构信息:")
-    print(f"节点数: {G.number_of_nodes()}")
-    print(f"边数: {G.number_of_edges()}")
-    print("边详情:", list(G.edges(data=True)))
+    print("📊 Graph structure details:")
+    print(f"Number of nodes: {G.number_of_nodes()}")
+    print(f"Number of edges: {G.number_of_edges()}")
+    print("Edge details:", list(G.edges(data=True)))
 
-    # 3D 可视化
     pos = nx.spring_layout(G, dim=3, seed=42)
     x_nodes = [pos[node][0] for node in G.nodes]
     y_nodes = [pos[node][1] for node in G.nodes]
@@ -144,23 +137,22 @@ if G is not None:
         margin=dict(l=0, r=0, t=40, b=0)
     )
 
-    # 保存图文件
     html_path = os.path.join(results_dir, "cryptocurrency_correlation_graph_3d.html")
     fig.write_html(html_path)
-    print(f"✅ 图已保存为: {html_path}")
+    print(f"✅ Graph saved as: {html_path}")
 
-    # 保存边列表
+    # Save edges
     edges = [(u, v, w['weight']) for u, v, w in G.edges(data=True)]
     edges_df = pd.DataFrame(edges, columns=['source', 'target', 'weight'])
     edges_df.to_csv(os.path.join(data_dir, "graph_edges.csv"), index=False)
-    print("✅ 图的边已保存为 graph_edges.csv")
+    print("✅ Graph edges saved as graph_edges.csv")
 
-    # 展示图
+    # Show figure
     fig.show()
 else:
-    print("⚠️ 图 G 是 None：没有找到满足条件的完整图结构，跳过可视化和保存。")
+    print("⚠️ Warning: Graph G is None. No sufficient structure found. Skipping visualization and save.")
 
-# ------------------- 保存特征和相关矩阵 -------------------
+# ------------------- Save Features & Correlation Matrix -------------------
 features_df.to_csv(os.path.join(data_dir, "features.csv"), index=True)
 correlation_matrix.to_csv(os.path.join(data_dir, "correlation_matrix.csv"))
-print("✅ 特征与相关矩阵已保存完毕。")
+print("✅ Features and correlation matrix saved successfully.")

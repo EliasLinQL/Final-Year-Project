@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from torch.optim.lr_scheduler import OneCycleLR
 
-def train_model(project_root=r"C:\Users\32561\Desktop\lqf"):
+def train_model(project_root=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))):
     data_dir = os.path.join(project_root, "data")
     results_dir = os.path.join(project_root, "results")
     os.makedirs(results_dir, exist_ok=True)
