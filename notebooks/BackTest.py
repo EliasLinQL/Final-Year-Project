@@ -8,7 +8,7 @@ project_root = r"D:\Y3\FYP\Final-Year-Project\Final-Year-Project"
 result_dir = os.path.join(project_root, "results")
 
 # Parameters
-FEE = 0.00  # Transaction fee (0.02%)
+FEE = 0.0002  # Transaction fee (0.02%)
 symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'TRXUSDT']
 num_models = 3
 
