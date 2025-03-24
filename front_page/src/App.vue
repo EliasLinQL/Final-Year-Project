@@ -5,14 +5,14 @@
       <!--Model-Info-Part-->
       <!------------------->
       <transition name="backtest-infofade">
-        <model-info class="info"  :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible, traininfo: hasBeenTrain||hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph" @triggerModelToApp="handleModelFromChild"/>
+        <model-info class="info"  :class="{ calltrain: isTrainVisible, callgraph: waitisGraphVisible, traininfo: hasBeenCreate }" @triggerTrain="goTrain" @triggerGraph="showGraph" @triggerModelToApp="handleModelFromChild"/>
       </transition>
 
       <!-------------------->
       <!--Model-Train-Part-->
       <!-------------------->
       <transition name="train">
-        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenTrain||hasBeenCreate }" :newtrainset="NewTrainSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails" @trigger-update-pre="updatePre"/>
+        <model-train class="train" v-if ="isTrainVisible"  :class="{ traintrain: hasBeenCreate }" :newtrainset="NewTrainSet" @triggerEndTrain="endTrain" @triggerStartTrain="startTrain" @triggerGoCreate="goCreateModel" @triggerDetail="callDetails" @trigger-update-pre="updatePre"/>
       </transition>
 
       <transition name="callpreinfo">
@@ -27,19 +27,17 @@
         <currency-list class="currency-list" v-if="isCurrencyListVisible" @trigger-submit="currencySubmit" @trigger-cancel="currencyCancel"/>
       </transition>
 
-      <transition name="getloss">
-        <train-loss class="loss" v-if="hasBeenTrain"/>
-      </transition>
 
       <!-------------->
       <!--Graph-Part-->
       <!-------------->
       <transition name="showGraph-relation">
-        <relation
+        <BackTestResult
             class="relation"
             v-if="waitisGraphVisible"
             :class="{ swapped: !isDiagramVisible }"
             :state-switch-r="!isDiagramVisible"
+            :selected-currency="selectedCurrencyForDiagram"
             :selected-model="selectedModelName"
         />
       </transition>
@@ -89,11 +87,10 @@
 import {ref, watch} from 'vue';
 import ModelInfo from "@/components/modelInfo.vue";
 import ModelTrain from "@/components/modelTrain.vue";
-import Relation from "@/components/backTestResult.vue";
+import BackTestResult from "@/components/backTestResult.vue";
 import BackTestControl from "@/components/backTestControl.vue";
 import Diagram from "@/components/diagram.vue";
 import RToDBtn from "@/components/rToDBtn.vue";
-import TrainLoss from "@/components/trainLoss.vue";
 import NewModelSet from "@/components/newModelSet.vue";
 import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 import CurrencyList from "@/components/currencyList.vue";
@@ -400,28 +397,6 @@ watch(isGraphVisible, (newVal) => {
     opacity: 1;
   }
 
-  /******************/
-  /* trainLoss Part */
-  /******************/
-  .loss{
-    position: absolute;
-    top: 48%;
-    left: 40.2%;
-  }
-
-  .getloss-enter-active,.getloss-leave-active {
-    transition: all 0.8s ease;
-  }
-
-  .getloss-enter-from {
-    transform: translateY(600px);
-    opacity: 1;
-  }
-  .getloss-leave-to {
-    transform: translateY(600px);
-    opacity: 1;
-  }
-
 
   /************************/
   /* backTestControl Part */
@@ -457,7 +432,7 @@ watch(isGraphVisible, (newVal) => {
   }
 
   .relation.swapped {
-    transform: translateY(66.5vh);
+    transform: translateY(66.9vh);
   }
 
   .showGraph-relation-enter-active, .showGraph-relation-leave-active {

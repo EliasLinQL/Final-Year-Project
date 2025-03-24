@@ -17,17 +17,36 @@
 
 <script setup>
 import CurrencyCheckmenu from "@/components/currencyCheckmenu.vue";
+import { ref } from 'vue';
 
 const emit = defineEmits(["triggerBackTest", "triggerCurrencyToApp"]);
+const isLoading = ref(false); // 加载动画状态
+const message = ref("");
 
-function goBackTest() {
-  emit("triggerBackTest");
+async function goBackTest() {
+  isLoading.value = true;
+  message.value = "Running backtest...";
+  try {
+    const response = await fetch("http://localhost:5000/api/run_backtest", {
+      method: "POST",
+    });
+    const result = await response.json();
+    message.value = result.message;
+    console.log("✅ Backtest Result:", result);
+    emit("triggerBackTest");
+  } catch (error) {
+    console.error("❌ Backtest request failed:", error);
+    message.value = "Failed to run backtest.";
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 function handleCurrencySelect(selected) {
-  emit("triggerCurrencyToApp", selected); // 发给 App.vue
+  emit("triggerCurrencyToApp", selected);
 }
 </script>
+
 
 <style scoped>
 .box-column{

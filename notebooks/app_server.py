@@ -67,16 +67,28 @@ def serve_image(filename):
         return send_file(file_path, mimetype='image/png')  # or 'image/jpeg'
     return "Image Not Found", 404
 
-@app.route('/api/image/<model>/<currency>', methods=['GET'])
-def serve_prediction_image(model, currency):
+@app.route('/api/image/<model>/<filename>', methods=['GET'])
+def serve_prediction_image(model, filename):
     results_dir = os.path.join(os.path.dirname(__file__), '..', 'results', model)
-    filename = f"{currency}_Actual_vs_Predicted.png"
     file_path = os.path.join(results_dir, filename)
-
     if os.path.exists(file_path):
         return send_from_directory(results_dir, filename)
     else:
         return {"status": "error", "message": "Image not found"}, 404
+
+@app.route('/api/run_backtest', methods=['POST'])
+def api_run_backtest():
+    try:
+        print("📊 Backtest request received.")
+        result = execute_backtest()
+        return jsonify({
+            "status": result.get("status"),
+            "message": result.get("message")
+        }), 200
+    except Exception as e:
+        print("❌ API Error (run_backtest):", str(e))
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 def execute_data_processing():
     try:
@@ -119,6 +131,28 @@ def execute_model_training():
             return {"status": "error", "message": result.stderr}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+def execute_backtest():
+    try:
+        script = os.path.join(os.path.dirname(__file__), 'BackTest.py')
+        python_exec = sys.executable
+        print(f"⚙️ Executing: {python_exec} {script}")
+        result = subprocess.run(
+            [python_exec, script],
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='ignore'
+        )
+        print("📤 STDOUT:", result.stdout)
+        print("📥 STDERR:", result.stderr)
+        if result.returncode == 0:
+            return {"status": "success", "message": "Backtest completed."}
+        else:
+            return {"status": "error", "message": result.stderr}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 if __name__ == '__main__':
     print("🚀 Starting Flask server at http://localhost:5000")

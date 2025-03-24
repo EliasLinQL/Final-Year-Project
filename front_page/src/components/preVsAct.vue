@@ -37,9 +37,8 @@ watch(
     [() => props.selectedModel, () => props.selectedCurrency],
     ([model, currency]) => {
       if (model && currency) {
-        imageUrl.value = `http://localhost:5000/api/image/${model}/${currency}`;
+        imageUrl.value = `http://localhost:5000/api/image/${model}/${currency}_Actual_vs_Predicted.png`;
         showError.value = false;
-        console.log('📊 Diagram 请求图片路径：', imageUrl.value);
       }
     }
 );
@@ -64,7 +63,7 @@ function closeModal() {
   align-items: center;
   background-color: #757575;
   width: 450px;
-  height: 228px;
+  height: 226px;
   margin: 10px;
   padding: 0;
   position: relative;

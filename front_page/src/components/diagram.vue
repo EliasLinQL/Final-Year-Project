@@ -176,7 +176,6 @@ onBeforeUnmount(() => {
   margin: 10px;
   padding: 0;
   position: relative;
-  border-radius: 18px;
   transition: all 0.3s ease;
 }
 

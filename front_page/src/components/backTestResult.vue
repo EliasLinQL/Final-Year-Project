@@ -1,17 +1,18 @@
 <template>
   <div class="box-column" :class="{ box_switch: props.stateSwitchR }">
     <img
-        v-if="props.selectedModel"
+        v-if="imageUrl"
         :src="imageUrl"
-        alt="Model Loss Image"
+        alt="Backtest Image"
         class="model-image"
         @error="handleImageError"
     />
+    <p v-if="showError" class="msg">❌ Failed to load image or image not found!</p>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import {  ref, watch } from 'vue';
 
 const props = defineProps({
   stateSwitchR: {
@@ -28,17 +29,31 @@ const props = defineProps({
   }
 });
 
-// 计算图片路径（从 Flask 后端接口加载）
-const imageUrl = computed(() => {
-  return props.selectedModel
-      ? `http://localhost:5000/api/image/${props.selectedModel}_loss.png`
-      : '';
-});
+const imageUrl = ref('');
+const showError = ref(false);
 
-// 处理加载失败时显示备用内容
+// 监听模型和币种变化，更新图片路径
+watch(
+    () => [props.selectedModel, props.selectedCurrency],
+    ([model, currency]) => {
+      console.log('📌 Watch Triggered:', model, currency); // ✅ 添加日志
+
+      if (model && currency) {
+        const url = `http://localhost:5000/api/image/${model}/${currency}_Backtest.png`;
+        imageUrl.value = url;
+        console.log("📷 imageUrl set to:", url);
+        showError.value = false;
+      }
+    },
+    { immediate: true }
+);
+
+
+// 图片加载失败处理
 function handleImageError(event) {
-  event.target.src = ''; // 或换成默认图，如 /placeholder.png
-  console.warn("⚠️ 图片加载失败:", imageUrl.value);
+  event.target.src = '';
+  showError.value = true;
+  console.warn("⚠️ Failed to load image:", imageUrl.value);
 }
 </script>
 
@@ -57,13 +72,7 @@ function handleImageError(event) {
 
 .box_switch {
   width: 450px;
-  height: 270px;
-}
-
-p {
-  margin: 15px;
-  font-family: Microsoft YaHei;
-  color: #E0E0E0;
+  height: 226px;
 }
 
 .model-image {
@@ -72,5 +81,12 @@ p {
   object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.msg {
+  font-size: 16px;
+  color: #ffcdd2;
+  margin-top: 20px;
+  text-align: center;
 }
 </style>
