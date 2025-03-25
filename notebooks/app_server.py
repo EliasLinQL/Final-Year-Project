@@ -52,13 +52,25 @@ def api_train_model():
     try:
         print("🚀 Model training request received.")
         result = execute_model_training()
-        return jsonify({
+
+        response_data = {
             "status": result.get("status"),
-            "message": result.get("message")
-        }), 200
+            "message": result.get("message"),
+        }
+
+        if "log_tail" in result:
+            response_data["log"] = result["log_tail"]
+
+        return jsonify(response_data), 200 if result.get("status") == "success" else 500
+
     except Exception as e:
         print("❌ API Error (train_model):", str(e))
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": str(e),
+            "log": "Internal server error during training execution."
+        }), 500
+
 
 @app.route('/api/image/<filename>')
 def serve_image(filename):
@@ -100,7 +112,7 @@ def execute_data_processing():
             capture_output=True,
             text=True,
             encoding='utf-8',
-            errors='ignore'  # 👈 防止 UnicodeDecodeError
+            errors='ignore'
         )
         print("📤 STDOUT:", result.stdout)
         print("📥 STDERR:", result.stderr)

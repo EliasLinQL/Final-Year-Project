@@ -26,6 +26,33 @@
 </template>
 
 <script setup>
+
+/**
+ * newModelSet.vue
+ *
+ * This component allows users to define and create a new model preset by:
+ * - Entering a model set name.
+ * - Selecting target currencies and a date range (via external components).
+ * - Validating currency listing dates against user-selected range.
+ * - Sending a backend request to fetch and prepare crypto data for training.
+ *
+ * Features:
+ * - Displays input fields for model set name and a button to trigger currency selection.
+ * - Performs pre-checks to ensure date ranges are valid for all selected currencies.
+ * - Handles backend communication to trigger data fetching and processing.
+ * - Emits events for creation, cancellation, and currency selection visibility.
+ *
+ * Props:
+ * - message (Boolean): Controls visibility sync with external toggle.
+ * - currencies (Array): List of selected currencies with associated date ranges.
+ *
+ * Emits:
+ * - triggerCreateNewModel (ModelSet): Emits the new model set object after successful creation.
+ * - triggerCancelCreate (): Cancels the model creation process.
+ * - triggerCurrencyList (): Toggles the visibility of the currency selection list.
+ */
+
+
 import {ref, watch} from "vue";
 import ModelSet from "@/bean/modelSet.js";
 
@@ -59,7 +86,7 @@ async function createModel() {
     return;
   }
 
-  // 🔍 校验每个币的上线时间
+  // Verify the launch time of each coin
   const earlySymbols = [];
 
   for (const symbol of symbols) {
@@ -70,7 +97,7 @@ async function createModel() {
 
       if (!Array.isArray(data) || data.length === 0) continue;
 
-      const earliestTimestamp = data[0][0]; // open_time 是时间戳
+      const earliestTimestamp = data[0][0];
       const earliestDate = new Date(earliestTimestamp);
       const selectedStart = new Date(start_date);
 
@@ -86,7 +113,7 @@ async function createModel() {
     }
   }
 
-  // 如果有早于币种上线时间的，提示用户并中断
+  // If there are any currencies that are launched earlier than the currency's launch time, prompt the user and interrupt
   if (earlySymbols.length > 0) {
     let message = "❌ The following currencies have a start date earlier than their listing date:\n\n";
     earlySymbols.forEach(item => {
@@ -96,7 +123,7 @@ async function createModel() {
     return;
   }
 
-  // ✅ 所有币时间校验通过 → 发起后端请求
+  // All coins have passed time verification → initiate backend request
   const requestData = { start_date, end_date, symbols };
 
   fetch("http://localhost:5000/api/fetch_crypto_data", {
@@ -116,7 +143,7 @@ async function createModel() {
           alert("✅ Python backend executed successfully! Model will now be created.");
           const newModelSet = new ModelSet(modelSetName.value, props.currencies);
           emit("triggerCreateNewModel", newModelSet);
-          alert("🎉 Model created successfully!");
+          alert(" Model created successfully!");
         } else {
           alert(`⚠️ Data fetch completed, but data processing failed: ${data.message}`);
         }

@@ -1,6 +1,5 @@
 <template>
   <div class="box-column">
-    <!-- 小图 -->
     <img
         v-if="imageUrl"
         :src="imageUrl"
@@ -9,9 +8,8 @@
         @click="showModal = true"
         @error="onImageError"
     />
-    <p v-if="showError" class="msg">❌ 图像加载失败或尚未生成！</p>
+    <p v-if="showError" class="msg">❌ Image loading failed or not yet generated!</p>
 
-    <!-- ✅ 放大图（使用 Teleport 保证最顶层展示） -->
     <Teleport to="body">
       <div v-if="showModal" class="modal-overlay" @click="closeModal">
         <img :src="imageUrl" class="modal-image" />
@@ -22,6 +20,23 @@
 
 
 <script setup>
+
+/**
+ * preVsAct.vue
+ *
+ * This component displays the predicted vs actual price chart image for a selected currency and model.
+ *
+ * Features:
+ * - Dynamically constructs and loads an image URL based on selected model and currency.
+ * - Provides graceful error handling when the image is missing or fails to load.
+ * - Allows users to click on the image to view a larger version in a modal overlay.
+ *
+ * Props:
+ * - selectedCurrency (String): The currency symbol to visualize (e.g., BTCUSDT).
+ * - selectedModel (String): The name of the trained model used for prediction.
+ */
+
+
 import { ref, watch } from 'vue';
 
 const props = defineProps({
@@ -31,7 +46,7 @@ const props = defineProps({
 
 const imageUrl = ref('');
 const showError = ref(false);
-const showModal = ref(false); // 控制放大图展示
+const showModal = ref(false);
 
 watch(
     [() => props.selectedModel, () => props.selectedCurrency],
@@ -46,7 +61,7 @@ watch(
 function onImageError() {
   showError.value = true;
   imageUrl.value = '';
-  console.warn('❌ 图片加载失败');
+  console.warn('❌ Image loading failed!');
 }
 
 function closeModal() {
@@ -91,7 +106,6 @@ function closeModal() {
   font-weight: bold;
 }
 
-/* 放大模态图样式 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -99,7 +113,7 @@ function closeModal() {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.8);
-  z-index: 9999; /* 保证高于所有其他内容 */
+  z-index: 999;
   display: flex;
   justify-content: center;
   align-items: center;

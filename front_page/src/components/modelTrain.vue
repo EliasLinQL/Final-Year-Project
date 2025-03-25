@@ -28,12 +28,38 @@
     </div>
     <div class="box-row box-btn">
       <button class="btn" @click="endTrain">End Training</button>
-      <button class="btn" @click="startTrain">Start Train</button>
+      <button class="btn" @click="startTrain">Start Training</button>
     </div>
   </div>
 </template>
 
 <script setup>
+
+/**
+ * modelTrain.vue
+ *
+ * This component manages the training workflow and model preset selection.
+ *
+ * Features:
+ * - Displays available training presets using the TrainCheckmenu component.
+ * - Allows users to create new presets, view preset details, and select one for training.
+ * - Supports persistent storage of presets via localStorage.
+ * - Provides "Start Training" and "End Training" actions with backend integration.
+ *
+ * Logic Highlights:
+ * - Automatically syncs new presets from props and updates localStorage.
+ * - Emits selected preset data for external preview/update use.
+ * - Provides visual feedback (e.g., detail toggle, name display).
+ *
+ * Emits:
+ * - triggerStartTrain (): Starts model training.
+ * - triggerEndTrain (): Ends model training.
+ * - triggerDetail (): Toggles detail panel for the selected preset.
+ * - triggerGoCreate (): Signals user intent to create a new model preset.
+ * - triggerUpdatePre (Object): Sends the selected preset to parent for preview updates.
+ */
+
+
 import {ref, watch, onMounted, onBeforeUnmount} from "vue";
 import TrainCheckmenu from "@/components/TrainCheckmenu.vue";
 import ModelSet from "@/bean/modelSet.js";
@@ -49,6 +75,7 @@ const emit = defineEmits([
   "triggerGoCreate",
   "triggerUpdatePre"
 ]);
+
 const props = defineProps({
   newtrainset: {type: Object},
 });
@@ -63,7 +90,6 @@ function startTrain() {
     return;
   }
 
-
   fetch('http://localhost:5000/api/train_model', {
     method: 'POST'
   })
@@ -76,10 +102,8 @@ function startTrain() {
         alert("Training failed");
       });
 
-
   emit("triggerStartTrain");
 }
-
 
 function callDetail() {
   if (!selectedTrainSet.value) {
@@ -91,7 +115,6 @@ function callDetail() {
   emit("triggerDetail");
 }
 
-
 function createModel() {
   emit("triggerGoCreate");
 }
@@ -100,12 +123,12 @@ function setTrainSet(selectedItem) {
   selectedTrainSet.value = selectedItem;
 }
 
-// 更新 LocalStorage 的函数
+// Function to update localStorage
 function updateLocalStorage() {
   localStorage.setItem("trainSettings", JSON.stringify(trainSettings.value));
 }
 
-// 从 LocalStorage 初始化 trainSettings
+// Initialize trainSettings from localStorage
 onMounted(() => {
   const savedSettings = localStorage.getItem("trainSettings");
   if (savedSettings) {
@@ -113,13 +136,14 @@ onMounted(() => {
   }
 });
 
-// 添加新数据到 trainSettings，并存储
+// Add new data to trainSettings and store it
 watch(props, (newval) => {
   if (newval.newtrainset) {
     trainSettings.value.push(newval.newtrainset);
   }
 });
-// 当 trainSettings 改变时自动存储到 LocalStorage
+
+// Automatically store trainSettings to localStorage on change
 watch(
     trainSettings,
     (newval) => {
@@ -127,11 +151,12 @@ watch(
     },
     {deep: true}
 );
-//实时更新pre预览数据
+
+// Realtime update for pre-preview data
 watch(
     selectedTrainSet,
     (newval) => {
-      emit("triggerUpdatePre",newval);
+      emit("triggerUpdatePre", newval);
     }
 );
 

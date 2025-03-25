@@ -70,6 +70,9 @@
         <r-to-d-btn class="r-to-d-btn" v-if="isGraphVisible" @triggerRToD="rToD"/>
       </transition>
 
+      <!----------------->
+      <!--BackTest-Part-->
+      <!----------------->
       <transition name="showGraph-btc">
         <back-test-control
             class="btc"
@@ -96,7 +99,7 @@ import PreSupposedInfo from "@/components/preSupposedInfo.vue";
 import CurrencyList from "@/components/currencyList.vue";
 import PreVsAct from "@/components/preVsAct.vue";
 
-//控制参数
+//Control parameters
 const isTrainVisible = ref(false);
 const isGraphVisible = ref(false);
 const hasBeenTrain = ref(false);
@@ -108,7 +111,7 @@ const hasBeenCreate = ref(false);
 const isModelSetDetailVisible = ref(false);
 const isCurrencyListVisible = ref(false);
 
-//通讯数据
+//communication data
 const Currencies = ref([]);
 const NewTrainSet = ref([]);
 const TrainSet = ref(null);
@@ -189,7 +192,6 @@ function callCurrencyList(){
   isCurrencyListVisible.value = !isCurrencyListVisible.value;
 }
 
-//将数据发送到modelTrain组件
 function createModel(newModelSet){
   NewTrainSet.value = newModelSet;
   hasBeenCreate.value = false;
@@ -205,7 +207,6 @@ function cancelCreate(){
 // CurrencyList Function Part
 // --------------------------
 
-//提交选中货币数据到newModelSet
 function currencySubmit(selectedCurrencies){
   Currencies.value = selectedCurrencies;
   isCurrencyListVisible.value = false;
@@ -232,18 +233,11 @@ function goBackTest() {
 }
 function handleCurrencyFromBackTest(currency) {
   selectedCurrencyForDiagram.value = currency;
-  console.log("✅ 传给 Diagram 的币种是：", currency);
 }
 
 // --------------------------
 // BackTestInfo Function Part
 // --------------------------
-
-function endTest(){
-  isBackTestVisible.value = false;
-  isGraphVisible.value = true;
-}
-
 
 watch(isGraphVisible, (newVal) => {
   setTimeout(()=>{

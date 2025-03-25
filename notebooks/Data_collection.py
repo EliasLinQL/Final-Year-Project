@@ -8,7 +8,7 @@ import requests
 # Binance API base URL
 BASE_URL = 'https://api.binance.com'
 
-# 项目根目录和数据目录
+# Project root directory and data directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_dir = os.path.join(project_root, 'data')
 os.makedirs(data_dir, exist_ok=True)
@@ -55,7 +55,7 @@ def fetch_crypto_data(symbols, start_time, end_time):
                 current_start_time = int(df['open_time'].iloc[-1].timestamp() * 1000) + 1
 
             if not final_df.empty:
-                final_df.to_csv(output_file, index=False, encoding='utf-8-sig')  # ✅ 使用utf-8-sig防止编码问题
+                final_df.to_csv(output_file, index=False, encoding='utf-8-sig')
                 file_paths.append(output_file)
                 print(f"✅ Saved: {output_file}")
             else:

@@ -40,16 +40,36 @@
 </template>
 
 <script setup>
+
+/**
+ * currencyList.vue
+ *
+ * This component provides a UI for selecting multiple cryptocurrencies along with a unified date range.
+ *
+ * Features:
+ * - Displays a list of predefined cryptocurrencies, each with a checkbox and an associated icon.
+ * - Allows the user to select a start and end date using a date range picker (vue-datepicker).
+ * - Saves and restores user selections from localStorage.
+ * - Emits the selected currencies and date range to the parent component on submit.
+ * - Provides cancel functionality to abort the selection process.
+ *
+ * Props: (none)
+ *
+ * Emits:
+ * - triggerSubmit (CurrencySet[]): Emits the selected currencies with their date range.
+ * - triggerCancel (): Emits when the user clicks the cancel button.
+ */
+
+
 import {onMounted, ref} from "vue";
 import DatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import CurrencySet from "@/bean/currencySet.js";
 
-// 定义emit事件
 const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 
 const allDates = ref(["",""]);
-// 初始化货币数据
+// Initialize currency data
 const currencies = ref([
   { currency: new CurrencySet("DOGEUSDT", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
   { currency: new CurrencySet("BTCUSDT", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
@@ -83,7 +103,7 @@ function submit() {
         return item.currency;
       });
 
-  // 保存到 localStorage
+  // Save to local storage
   localStorage.setItem("selectedCurrencies", JSON.stringify(selectedCurrencies));
 
   emit("triggerSubmit", selectedCurrencies);
@@ -100,16 +120,16 @@ onMounted(() => {
   if (savedData) {
     const savedCurrencies = JSON.parse(savedData);
 
-    // 设置 allDates 的值（统一时间）
+    // Set the value of allDates (unified time)
     if (savedCurrencies.length > 0 && savedCurrencies[0].dates) {
       const [start, end] = savedCurrencies[0].dates;
       allDates.value = [
         new Date(start),
-        new Date() // 设置结束时间为当前时间
+        new Date() // Set the end time to the current time
       ];
     }
 
-    // 更新 currencies 中的 selected 状态
+    // Update the selected status in currencies
     currencies.value.forEach((item) => {
       const match = savedCurrencies.find(
           (saved) => saved.name === item.currency.name

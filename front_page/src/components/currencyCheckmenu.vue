@@ -22,6 +22,23 @@
 </template>
 
 <script setup>
+
+/**
+ * currencyCheckmenu.vue
+ *
+ * This component provides a dropdown-style radio selection menu for choosing a cryptocurrency.
+ *
+ * Features:
+ * - Toggleable dropdown menu with smooth transition animation.
+ * - Allows users to select one currency from a predefined list (radio buttons).
+ * - Emits the selected currency to the parent component using `updateSelectedCurrency`.
+ * - Automatically closes the menu after a selection is made.
+ *
+ * Emits:
+ * - updateSelectedCurrency (String): Emits the selected currency to the parent component.
+ */
+
+
 import { ref, watch } from 'vue';
 
 const emit = defineEmits(['updateSelectedCurrency']);

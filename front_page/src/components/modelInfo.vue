@@ -21,7 +21,7 @@
       />
     </div>
 
-    <!-- 放大图模态框，确保显示在最上层 -->
+    <!-- Zoom in on the modal box to ensure it is displayed at the top layer -->
     <Teleport to="body">
       <div v-if="showModal" class="modal-overlay" @click="closeModal">
         <img :src="imageUrl" class="modal-image" />
@@ -30,13 +30,35 @@
 
 
     <div class="box-row box-btn">
-      <button class="btn" @click="goTrain">Go Train</button>
-      <button class="btn" @click="showGraph">Add</button>
+      <button class="btn" @click="goTrain">Go Training</button>
+      <button class="btn" @click="showGraph">Result</button>
     </div>
   </div>
 </template>
 
 <script setup>
+
+/**
+ * modelInfo.vue
+ *
+ * This component displays basic information about available models, including:
+ * - A dropdown menu to select a model (via ModelCheckmenu).
+ * - A loss curve image preview for the selected model.
+ * - A modal for zoomed-in viewing of the image.
+ * - Buttons to trigger training or show the result graph.
+ *
+ * Features:
+ * - Automatically updates the preview image when a model is selected.
+ * - Emits selection and action events to the parent component.
+ * - Handles image loading failure gracefully.
+ *
+ * Emits:
+ * - triggerModelToApp (String): Sends the selected model name to the parent component.
+ * - triggerTrain (): Signals that the user wants to start training.
+ * - triggerGraph (): Signals that the user wants to view results/graph.
+ */
+
+
 import ModelCheckmenu from "@/components/modelCheckmenu.vue";
 import { ref, computed } from "vue";
 
@@ -58,7 +80,7 @@ function handleSelectedModel(modelName) {
 
 function handleImageError(event) {
   event.target.src = '';
-  console.warn("⚠️ 模型图片加载失败:", imageUrl.value);
+  console.warn("⚠️ Model image loading failed:", imageUrl.value);
 }
 
 function goTrain() {
@@ -124,7 +146,7 @@ p {
 .loss-image:hover {
   transform: scale(1.02);
 }
-/* ✅ 模态框放大图样式 */
+
 .modal-overlay {
   position: fixed;
   top: 0;

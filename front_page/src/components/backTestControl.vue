@@ -16,11 +16,28 @@
 </template>
 
 <script setup>
+
+/**
+ * backtestControl.vue
+ *
+ * This component provides a simple UI for selecting a cryptocurrency and initiating a backtest.
+ *
+ * Features:
+ * - Allows user to select a currency via a dropdown (CurrencyCheckmenu component).
+ * - Triggers a backtest by sending a POST request to the Flask API (/api/run_backtest).
+ * - Emits events to notify the parent component of selected currency and backtest execution.
+ *
+ * Emitted Events:
+ * - triggerCurrencyToApp(selectedCurrency): Sends the selected currency to the parent component.
+ * - triggerBackTest(): Notifies parent when backtest completes.
+ */
+
+
 import CurrencyCheckmenu from "@/components/currencyCheckmenu.vue";
 import { ref } from 'vue';
 
 const emit = defineEmits(["triggerBackTest", "triggerCurrencyToApp"]);
-const isLoading = ref(false); // 加载动画状态
+const isLoading = ref(false);
 const message = ref("");
 
 async function goBackTest() {
@@ -32,7 +49,6 @@ async function goBackTest() {
     });
     const result = await response.json();
     message.value = result.message;
-    console.log("✅ Backtest Result:", result);
     emit("triggerBackTest");
   } catch (error) {
     console.error("❌ Backtest request failed:", error);

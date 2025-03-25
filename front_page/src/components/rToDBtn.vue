@@ -7,6 +7,22 @@
 </template>
 
 <script setup>
+
+/**
+ * rToDBtn.vue
+ *
+ * This component provides a toggle button UI to switch between "Test Result" and "Diagram" views.
+ *
+ * Features:
+ * - Animated toggle button with smooth visual transition.
+ * - Displays contextual labels ("TestResult" / "Diagram") depending on the current state.
+ * - Emits an event after the toggle animation completes, allowing the parent to respond accordingly.
+ *
+ * Emits:
+ * - triggerRToD (): Emitted after the toggle completes, to notify the parent component of the state change.
+ */
+
+
 import {ref} from "vue";
 
 const isDiagramVisible = ref(true);
@@ -15,11 +31,11 @@ const emit = defineEmits("triggerRToD")
 
 function turn() {
   isDiagramVisible.value = !isDiagramVisible.value;
-  TextSwitchVisible.value = false; // 隐藏文字
+  TextSwitchVisible.value = false;
   setTimeout(() => {
-    TextSwitchVisible.value = true; // 延迟显示文字
+    TextSwitchVisible.value = true;
     emit("triggerRToD");
-  }, 400); // 延迟 400 毫秒
+  }, 400);
 }
 </script>
 

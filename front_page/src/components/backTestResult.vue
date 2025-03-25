@@ -12,6 +12,25 @@
 </template>
 
 <script setup>
+
+/**
+ * backTestResult.vue
+ *
+ * This component displays the backtest result image for a selected model and currency.
+ *
+ * Features:
+ * - Dynamically loads and displays an image based on the selected model and currency.
+ * - Automatically updates when either `selectedModel` or `selectedCurrency` changes.
+ * - Handles image loading errors and displays an error message if the image is missing or fails to load.
+ * - Responsive styling: adjusts layout when `stateSwitchR` is enabled.
+ *
+ * Props:
+ * - stateSwitchR (Boolean): Triggers a compact layout mode.
+ * - selectedModel (String): The currently selected model name.
+ * - selectedCurrency (String): The currently selected cryptocurrency.
+ */
+
+
 import {  ref, watch } from 'vue';
 
 const props = defineProps({
@@ -32,16 +51,14 @@ const props = defineProps({
 const imageUrl = ref('');
 const showError = ref(false);
 
-// 监听模型和币种变化，更新图片路径
+// Monitor model and currency changes, update image path
 watch(
     () => [props.selectedModel, props.selectedCurrency],
     ([model, currency]) => {
-      console.log('📌 Watch Triggered:', model, currency); // ✅ 添加日志
 
       if (model && currency) {
         const url = `http://localhost:5000/api/image/${model}/${currency}_Backtest.png`;
         imageUrl.value = url;
-        console.log("📷 imageUrl set to:", url);
         showError.value = false;
       }
     },
@@ -49,7 +66,7 @@ watch(
 );
 
 
-// 图片加载失败处理
+// Image loading failure handling
 function handleImageError(event) {
   event.target.src = '';
   showError.value = true;

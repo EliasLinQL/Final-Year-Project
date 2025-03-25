@@ -22,13 +22,30 @@
 </template>
 
 <script setup>
+
+/**
+ * modelCheckmenu.vue
+ *
+ * This component provides a dropdown-style radio menu for selecting a model from a predefined list.
+ *
+ * Features:
+ * - Toggleable menu with smooth transition animation.
+ * - Lists available models (`model_1`, `model_2`, `model_3`) as radio buttons.
+ * - Emits the selected model name to the parent component.
+ * - Automatically closes the menu after selection.
+ *
+ * Emits:
+ * - updateSelectedModel (String): Emits the selected model name to the parent component.
+ */
+
+
 import {ref, watch} from 'vue';
 
 const emit = defineEmits(['updateSelectedModel']);
 
 const isMenuVisible = ref(false);
 
-// ✅ 固定模型选项
+// Initialize Model Options
 const models = ref([
   {name: 'model_1'},
   {name: 'model_2'},
@@ -37,12 +54,12 @@ const models = ref([
 
 const selectedModel = ref(null);
 
-// 切换菜单显示
+// Switch menu display
 function toggleMenu() {
   isMenuVisible.value = !isMenuVisible.value;
 }
 
-// 监听选中项变化 → 通知父组件
+// Monitor changes in selected items → Notify parent component
 watch(selectedModel, (newVal) => {
   emit('updateSelectedModel', newVal);
   isMenuVisible.value = false;

@@ -20,6 +20,25 @@
 </template>
 
 <script setup>
+
+/**
+ * preSupposedInfo.vue
+ *
+ * This component displays an overview of a selected training model preset (`ModelSet`), including:
+ * - The model preset name
+ * - The selected date range (start & end)
+ * - A list of selected currencies with their associated icons
+ *
+ * Features:
+ * - Automatically updates its display when a new `trainset` prop is received.
+ * - Reconstructs a full `ModelSet` object from raw prop data using `CurrencySet` and `ModelSet` classes.
+ * - Gracefully formats and renders all relevant preset information.
+ *
+ * Props:
+ * - trainset (Object): A `ModelSet` object containing name, date range, and selected currencies.
+ */
+
+
 import { ref, watch} from "vue";
 import ModelSet from "@/bean/modelSet.js";
 import CurrencySet from "@/bean/currencySet.js";
@@ -30,7 +49,7 @@ const props = defineProps({
 
 const selectedTrainSet = ref(new ModelSet("", []));
 
-// 日期格式化函数
+// Date formatting function
 function formatDate(date) {
   if (!date) return "N/A";
   const d = new Date(date);

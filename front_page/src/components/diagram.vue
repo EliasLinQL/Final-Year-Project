@@ -4,12 +4,32 @@
       <div class="spinner"></div>
       <p class="loading-text">Loading chart...</p>
     </div>
-    <p v-if="showError && !isLoading" class="msg">❌ 图像加载失败或尚未生成！</p>
+    <p v-if="showError && !isLoading" class="msg">❌ Failed to load image or image not found!</p>
   </div>
 </template>
 
 
 <script setup>
+
+/**
+ * diagram.vue
+ *
+ * This component renders a real-time candlestick chart for the selected cryptocurrency using the `lightweight-charts` library.
+ *
+ * Features:
+ * - Fetches historical candlestick (kline) data from Binance API (15-minute interval).
+ * - Displays data in a responsive, styled candlestick chart.
+ * - Subscribes to live price updates via WebSocket and updates the chart in real time.
+ * - Shows a loading spinner while fetching data and displays an error message if loading fails.
+ * - Supports layout switching based on the `stateSwitchD` prop (e.g., compact vs. expanded view).
+ *
+ * Props:
+ * - stateSwitchD (Boolean): Toggles chart layout mode (compact or full view).
+ * - selectedCurrency (String): The symbol of the cryptocurrency to display (e.g., BTCUSDT).
+ * - selectedModel (String): Currently unused, but reserved for potential model-specific behaviors.
+ */
+
+
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { createChart } from 'lightweight-charts';
 
@@ -47,14 +67,14 @@ const initChart = () => {
       secondsVisible: false
     },
     localization: {
-      locale: 'en' // ✅ 设置英文坐标轴
+      locale: 'en'
     }
   });
   candleSeries = chart.addCandlestickSeries();
 };
 
 
-// ✅ 状态切换时 resize
+// ✅ Resize when switching states
 const resizeChart = () => {
   nextTick(() => {
     if (chart && chartContainer.value) {
@@ -71,7 +91,7 @@ watch(() => props.stateSwitchD, () => {
 
 const fetchKlineData = async (symbol) => {
   try {
-    isLoading.value = true; // 开始加载
+    isLoading.value = true;
     showError.value = false;
     const endTime = Date.now();
     const startTime = endTime - 90 * 24 * 60 * 60 * 1000;
@@ -107,9 +127,9 @@ const fetchKlineData = async (symbol) => {
     resizeChart();
   } catch (e) {
     showError.value = true;
-    console.warn('❌ 加载失败:', e);
+    console.warn('❌ Load Fail:', e);
   } finally {
-    isLoading.value = false; // ✅ 加载结束
+    isLoading.value = false;
   }
 };
 

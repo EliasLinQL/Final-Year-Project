@@ -19,6 +19,25 @@
 </template>
 
 <script setup>
+
+/**
+ * trainCheckmenu.vue
+ *
+ * This component provides a dropdown-style radio menu for selecting a predefined training model set.
+ *
+ * Features:
+ * - Displays available training presets (`trainsettings`) as radio options.
+ * - Emits the selected preset object to the parent when a model is selected.
+ * - Menu automatically collapses after selection.
+ *
+ * Props:
+ * - trainsettings (Array): List of training presets, each containing `name` and `currencies`.
+ *
+ * Emits:
+ * - triggerTrainSetCheck (Object): Emits the full selected training set object when a model is chosen.
+ */
+
+
 import { ref, watch} from 'vue';
 
 const emit = defineEmits(["triggerTrainSetCheck"])
@@ -31,17 +50,17 @@ const models = ref([]);
 const selectedModel = ref(null);
 
 function toggleMenu() {
-  // 切换选单显示和隐藏状态
+  // Switch menu display and hide status
   isMenuVisible.value = !isMenuVisible.value;
 }
 
 watch(selectedModel, (newval) => {
   if (newval) {
     isMenuVisible.value = false;
-    // 找到选中的 name 对应的 trainset
+    // Find the trainset corresponding to the selected name
     const selectedItem = models.value.find(model => model.name === newval);
     if (selectedItem) {
-      // 通过 emit 触发事件并传递对应的 trainset
+      // Trigger events through emit and pass the corresponding trainset
       emit("triggerTrainSetCheck", selectedItem);
     }
   }
