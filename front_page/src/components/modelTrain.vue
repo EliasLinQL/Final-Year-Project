@@ -64,7 +64,7 @@ function startTrain() {
   }
 
 
-  fetch('http://localhost:5001/api/train_model', {
+  fetch('http://localhost:5000/api/train_model', {
     method: 'POST'
   })
       .then(res => res.json())
