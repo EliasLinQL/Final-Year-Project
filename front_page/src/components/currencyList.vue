@@ -71,21 +71,23 @@ const emit = defineEmits(["triggerSubmit", "triggerCancel"]);
 const allDates = ref(["",""]);
 // Initialize currency data
 const currencies = ref([
-  { currency: new CurrencySet("DOGEUSDT", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
-  { currency: new CurrencySet("BTCUSDT", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
-  { currency: new CurrencySet("ETHUSDT", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
-  { currency: new CurrencySet("SOLUSDT", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
-  { currency: new CurrencySet("XRPUSDT", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
-  { currency: new CurrencySet("BNBUSDT", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
-  { currency: new CurrencySet("AVAXUSDT", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
   { currency: new CurrencySet("ADAUSDT", ["", ""], "/currency_icon/cardano-ada-logo.png"), selected: false },
-  { currency: new CurrencySet("LINKUSDT", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
+  { currency: new CurrencySet("AVAXUSDT", ["", ""], "/currency_icon/avalanche-avax-logo.png"), selected: false },
+  { currency: new CurrencySet("BCHUSDT", ["", ""], "/currency_icon/bitcoin-cash-bch-logo.png"), selected: false },
+  { currency: new CurrencySet("BNBUSDT", ["", ""], "/currency_icon/bnb-bnb-logo.png"), selected: false },
+  { currency: new CurrencySet("BTCUSDT", ["", ""], "/currency_icon/bitcoin-btc-logo.png"), selected: false },
+  { currency: new CurrencySet("DOGEUSDT", ["", ""], "/currency_icon/dogecoin-doge-logo.png"), selected: false },
   { currency: new CurrencySet("DOTUSDT", ["", ""], "/currency_icon/polkadot-new-dot-logo.png"), selected: false },
+  { currency: new CurrencySet("ETHUSDT", ["", ""], "/currency_icon/ethereum-eth-logo.png"), selected: false },
+  { currency: new CurrencySet("HBARUSDT", ["", ""], "/currency_icon/hedera-hbar-logo.png"), selected: false },
+  { currency: new CurrencySet("LINKUSDT", ["", ""], "/currency_icon/chainlink-link-logo.png"), selected: false },
+  { currency: new CurrencySet("LTCUSDT", ["", ""], "/currency_icon/litecoin-ltc-logo.png"), selected: false },
   { currency: new CurrencySet("SHIBUSDT", ["", ""], "/currency_icon/shiba-inu-shib-logo.png"), selected: false },
+  { currency: new CurrencySet("SOLUSDT", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
   { currency: new CurrencySet("SUIUSDT", ["", ""], "/currency_icon/sui-sui-logo.png"), selected: false },
+  { currency: new CurrencySet("XRPUSDT", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
   { currency: new CurrencySet("TONUSDT", ["", ""], "/currency_icon/toncoin-ton-logo.png"), selected: false },
   { currency: new CurrencySet("TRXUSDT", ["", ""], "/currency_icon/tron-trx-logo.png"), selected: false },
-  { currency: new CurrencySet("WBTCUSDT", ["", ""], "/currency_icon/wrapped-bitcoin.png"), selected: false },
 ]);
 
 
