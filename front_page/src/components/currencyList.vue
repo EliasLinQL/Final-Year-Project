@@ -85,6 +85,7 @@ const currencies = ref([
   { currency: new CurrencySet("SHIBUSDT", ["", ""], "/currency_icon/shiba-inu-shib-logo.png"), selected: false },
   { currency: new CurrencySet("SOLUSDT", ["", ""], "/currency_icon/solana-sol-logo.png"), selected: false },
   { currency: new CurrencySet("SUIUSDT", ["", ""], "/currency_icon/sui-sui-logo.png"), selected: false },
+  { currency: new CurrencySet("XLMUSDT", ["", ""], "/currency_icon/stellar-xlm-logo.png"), selected: false },
   { currency: new CurrencySet("XRPUSDT", ["", ""], "/currency_icon/xrp-xrp-logo.png"), selected: false },
   { currency: new CurrencySet("TONUSDT", ["", ""], "/currency_icon/toncoin-ton-logo.png"), selected: false },
   { currency: new CurrencySet("TRXUSDT", ["", ""], "/currency_icon/tron-trx-logo.png"), selected: false },
